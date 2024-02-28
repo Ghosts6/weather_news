@@ -14,7 +14,7 @@ for this projec i use django and api like drf and rest api for backend and for f
  ![CSS3](https://img.shields.io/badge/css3-%231572B6.svg?style=plastic&logo=css3&logoColor=white) ![HTML5](https://img.shields.io/badge/html5-%23E34F26.svg?style=plastic&logo=html5&logoColor=white) ![JavaScript](https://img.shields.io/badge/javascript-%23323330.svg?style=plastic&logo=javascript&logoColor=%23F7DF1E) ![Python](https://img.shields.io/badge/python-3670A0?style=plastic&logo=python&logoColor=ffdd54) ![Django](https://img.shields.io/badge/django-%23092E20.svg?style=plastic&logo=django&logoColor=white) ![REST API](https://img.shields.io/badge/REST%20API-%2320232a.svg?style=plastic&logo=api&logoColor=white) ![RESTful API](https://img.shields.io/badge/RESTful%20API-%2320232a.svg?style=plastic&logo=api&logoColor=white) ![PostgreSQL](https://img.shields.io/badge/PostgreSQL-%23336791.svg?style=plastic&logo=postgresql&logoColor=white)
 
 
-# 🧑‍💻codesample:
+# 🧑‍💻code_sample:
 
 in this section we will take closer look to weather page which created for checking cities weather by searching they name
 
