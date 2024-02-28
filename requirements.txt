@@ -1,0 +1,9 @@
+python-ldap
+django
+whitenoise
+packaging
+django-auth-ldap
+django-cors-headers
+pytz
+geopy
+requests
