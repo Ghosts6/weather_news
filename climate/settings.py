@@ -47,7 +47,7 @@ TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
         'DIRS': [
-                os.path.join(BASE_DIR, '/home/ghost/Desktop/webProject/virtual/climate/climate/Template'), ],
+                os.path.join(BASE_DIR, 'climate/Template'), ],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -116,7 +116,7 @@ STATIC_URL = '/static/'
 STATIC_ROOT = BASE_DIR / 'staticfiles'
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 STATICFILES_DIRS = [
-    BASE_DIR / '/home/ghost/Desktop/webProject/virtual/climate/climate/static',
+    BASE_DIR / 'climate/static',
 ]
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
@@ -143,7 +143,7 @@ LOGGING = {
         'file': {
             'level': 'INFO',  # Set the logging level as needed (DEBUG, INFO, WARNING, ERROR, CRITICAL)
             'class': 'logging.handlers.RotatingFileHandler',
-            'filename': '/home/ghost/Desktop/webProject/virtual/climate/log.txt',
+            'filename': 'climate/log.txt',
             'maxBytes': 1024 * 1024 * 15,  # 15MB
             'backupCount': 10,
             'formatter': 'verbose',
