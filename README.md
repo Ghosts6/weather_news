@@ -206,3 +206,5 @@ def search_suggestions(request):
 ```
 
 # 🎥 video:
+
+[Screencast 2024-02-28 17:05:46.webm](https://github.com/Ghosts6/weather_news/assets/95994481/4346be05-13fa-4f3f-aaa7-a239d98510a7)
