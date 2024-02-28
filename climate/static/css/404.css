@@ -1,0 +1,36 @@
+body {
+    background-color: black;
+    background-size: 100% 100%;
+    position: absolute;
+    overflow: hidden;
+}
+
+.error {
+    position: fixed;
+    top: 40%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 48px;
+    font-weight: bold;
+    background: linear-gradient(
+        to right,green, 
+        blue, purple, red,
+        darkblue,darkgreen,darkred
+        );
+    -webkit-background-clip: text;
+    color: transparent;
+    background-position: left bottom;
+    transition: background-position 0.5s ease-in-out;
+    background-size: 300%;
+    animation: shine 12s linear infinite;
+    text-shadow: 0 10px 250px #00ff00;
+}
+
+@keyframes shine {
+    0% {
+        background-position: left bottom;
+    }
+    100% {
+        background-position: right bottom;
+    }
+}

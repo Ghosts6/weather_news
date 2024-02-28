@@ -1,0 +1,342 @@
+body {
+    animation: movingColor 10s infinite;
+    background: linear-gradient(180deg,rgb(176, 142, 199) 10%, #7966af 20% ,rgb(16, 177, 177) 100%) ;
+    background-size: 100% 100%;
+    background-attachment: fixed;
+    position: absolute;
+    overflow: auto;
+    margin: 0;
+}
+
+@keyframes movingColor {
+    0% {
+        background-position: 0% 50%;
+    }
+
+    50% {
+        background-position: 100% 50%;
+    }
+
+    100% {
+        background-position: 0% 50%;
+    }
+}
+
+#particles-js {
+    position: fixed;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+    z-index: -1;
+}
+
+.search-container{
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%,-50%);
+    position: fixed;
+    width: 800px;
+    height: 600px;
+    background-color: #376ea57e;
+    border-radius: 15px;
+    border: 2px double cyan;
+}
+
+.search-container:hover{
+    box-shadow: 0 0 15px rgb(4, 214, 214), 0 0 35px rgb(4, 214, 214), 0 0 55px rgb(4, 214, 214), 0 0 100px rgb(4, 214, 214);
+}
+
+.button{
+    cursor: pointer;
+    width: 500px;
+    height: 50px;
+    padding: 10px 20px;
+    background-color: transparent;
+    background: linear-gradient(
+        to right,
+        rgb(199, 140, 238) 33%,
+        #6d51bb 66%,
+        rgb(12, 190, 190) 100%
+    );
+    animation: gradient 5s linear infinite;
+    transition: background-position 0.8s ease-in-out;
+    background-position: left bottom;
+    background-size: 300%;
+    bottom: 5%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    position: fixed;
+    border: 2px solid #5e42ac;
+    border-radius: 30px;
+    box-shadow: 0 0 15px #4b3586, 0 0 35px #4b3586, 0 0 55px #4b3586, 0 0 100px #4b3586;
+    text-align: center;
+    color: black;
+    font-weight: bold;
+    font-size: 20px;
+}
+
+.button:hover{
+    border: 2px solid rgb(16, 177, 177);
+    box-shadow: 0 0 15px rgb(4, 214, 214), 0 0 35px rgb(4, 214, 214), 0 0 55px rgb(4, 214, 214), 0 0 100px rgb(4, 214, 214);
+    transition: background-position 0.8s ease-in-out;
+}
+
+@keyframes gradient {
+    0% {
+        background-position: left bottom;
+    }
+
+    100% {
+        background-position: right bottom;
+    }
+}
+
+#dark-mode-toggle{
+  position: fixed;
+  z-index: 999;
+}
+
+#dark-mode-toggle {
+  top: 2.5%;
+  right: 50px;
+  cursor: pointer;
+}
+
+#dark-mode-icon {
+  font-size: 42px;
+  color: cyan;
+}
+
+body.dark-mode {
+    animation: movingColor 10s infinite;
+    background: linear-gradient(180deg, rgb(54, 28, 71) 10%, #20173a 20%, rgb(5, 78, 78) 100%);
+    background-size: 100% 100%;
+    background-attachment: fixed;
+    position: absolute;
+    overflow: hidden;
+    margin: 0;
+    color: rgb(1, 85, 85);
+}
+
+.dark-mode {
+    background-color: #34495e;
+    border: 5px double #0be9f0;
+}
+
+.dark-mode .search-container:hover{
+    box-shadow: 0 0 15px rgb(12, 77, 77), 0 0 55px rgb(12, 77, 77),  0 0 75px rgb(12, 77, 77),0 0 120px rgb(12, 77, 77);
+}
+
+.dark-mode .search-container{
+    background-color: #34495e7e;
+    border: 2px double rgb(6, 80, 80);
+}
+
+.dark-mode .u3-icon{
+    color: #04484b;
+}
+
+#github-link{
+    top: 2.5%;
+    left: 50px;
+    cursor: pointer;
+    position: fixed;
+    color: cyan;
+    font-size: 42px;
+}
+
+#github-link:hover,
+#dark-mode-icon:hover{
+    text-shadow:0 0 15px rgb(4, 214, 214),0 0 35px rgb(4, 214, 214),0 0 55px rgb(4, 214, 214),0 0 100px rgb(4, 214, 214);
+}
+
+.input-container {
+    left: 50%;
+    top: 15%;
+    position: fixed;
+    transform: translate(-50%,-50%);
+}
+
+.input-container i {
+    position: absolute;
+    top: 75%;
+    transform: translateY(-50%);
+    left: -40px;
+    color: black;
+    font-size: 24px;
+}
+
+.input-container label {
+    left: 70px;
+    top: -20px;
+    position: relative;
+    font-weight: bolder;
+    font-size: 32px;
+    background: linear-gradient(
+        to right,
+        rgb(100, 44, 138),
+        #392966,
+        rgb(4, 85, 85),
+        rgb(54, 28, 71),
+        #20173a,
+        rgb(5, 78, 78)
+    );
+    background-clip: text;
+    -webkit-background-clip: text;
+    color: transparent;
+    background-position: left bottom;
+    transition: background-position 0.5s ease-in-out;
+    background-size: 300%;
+    animation: shine 12s linear infinite;
+}
+
+@keyframes shine {
+    0% {
+        background-position: left bottom;
+    }
+    100% {
+        background-position: right bottom;
+    }
+}
+
+input {
+    width: 450px;
+    padding: 10px;
+    border: 2px solid cyan;
+    background-color: rgba(245, 222, 179, 0.568);
+    border-radius: 15px;
+    color: black;
+    outline: none;
+}
+
+input::placeholder {
+    color: black;
+}
+
+input:hover{
+    border: 2px solid rgb(13, 128, 128);
+}
+
+
+
+.weather-container h2{
+    left: 50%;
+    top: 35%;
+    transform: translate(-50%,-50%);
+    position: fixed;
+    color: black;
+    font-weight: bolder;
+    font-size: 24px;
+    text-align: center;
+}
+
+.weather-container h3{
+    left: 20%;
+    top: 50%;
+    transform: translate(-50%,-50%);
+    position: fixed;
+    color: black;
+    font-weight: lighter;
+    font-size: 14px;
+    text-align: left;
+}
+.h3-icon{
+    top: 52%;
+    left: 11%;
+    transform: translate(-50%,-50%);
+    position: fixed;
+    font-size: 32px; 
+}
+
+.weather-container p{
+    top: 50%;
+    left: 83%;
+    transform: translate(-50%,-50%);
+    position: fixed;
+    color: black;
+    font-weight: lighter;
+    font-size: 14px;
+    text-align: left;
+}
+.weather-container i{
+    top: 52%;
+    left: 72%;    
+    transform: translate(-50%,-50%);
+    position: fixed;
+    font-size: 32px;
+}
+
+.u2{
+    top: 60%;
+    left: 21%;
+    transform: translate(-50%,-50%);
+    position:fixed;
+    color: black;
+    font-size: 14px;
+    font-weight: lighter;
+}
+.u2-icon{
+    top: 60%;
+    left: 11%;
+    transform: translate(-50%,-50%);
+    position: fixed;
+    font-size: 32px;    
+}
+
+.u3{
+    top: 61%;
+    left: 80%;
+    transform: translate(-50%,-50%);
+    position: fixed;
+    color: black;
+    font-weight: lighter;
+    font-size: 14px;
+    text-align: left;
+}
+.u3-icon{
+    top: 61%;
+    left: 71.5%;
+    transform: translate(-50%,-50%);
+    position: fixed;
+    font-size: 32px;  
+    color: blue;
+}
+
+.u1{
+    top: 75%;
+    left: 50%;
+    transform: translate(-50%,-50%);
+    position: fixed;
+    text-align: left;
+    color: black;
+    font-weight: lighter;
+    font-size: 14px;
+}
+.weather{
+    top: 70%;
+    left: 50%;
+    transform: translate(-50%,-50%);
+    position: fixed;
+    font-size: 32px;
+}
+
+.suggestions-container {
+    display: none;
+    position: absolute;
+    width: 100%;
+    max-height: 150px;
+    overflow-y: auto;
+    background-color: white;
+    border: 1px solid #ccc;
+    z-index: 100;
+}
+
+.suggestion-item {
+    padding: 10px;
+    cursor: pointer;
+}
+
+.suggestion-item:hover {
+    background-color: #f5f5f5;
+}

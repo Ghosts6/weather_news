@@ -1,0 +1,230 @@
+body {
+    animation: movingColor 10s infinite;
+    background: linear-gradient(180deg, rgb(176, 142, 199) 10%, #7966af 20%, rgb(16, 177, 177) 100%);
+    background-size: 100% 100%;
+    background-attachment: fixed;
+    position: absolute;
+    overflow-y: auto;
+    margin: 0;
+}
+
+@keyframes movingColor {
+    0% {
+        background-position: 0% 50%;
+    }
+
+    50% {
+        background-position: 100% 50%;
+    }
+
+    100% {
+        background-position: 0% 50%;
+    }
+}
+
+#particles-js {
+    position: fixed;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+    z-index: -1;
+}
+
+.button {
+    width: 500px;
+    height: 50px;
+    padding: 10px 20px;
+    background-color: transparent;
+    background: linear-gradient(
+        to right,
+        rgb(199, 140, 238) 33%,
+        #6d51bb 66%,
+        rgb(12, 190, 190) 100%
+    );
+    animation: gradient 5s linear infinite;
+    transition: background-position 0.8s ease-in-out;
+    background-position: left bottom;
+    background-size: 300%;
+    top: 5%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    position: fixed;
+    border: 2px solid #5e42ac;
+    border-radius: 30px;
+    box-shadow: 0 0 15px #4b3586, 0 0 35px #4b3586, 0 0 55px #4b3586, 0 0 100px #4b3586;
+    text-align: center;
+    color: black;
+    font-weight: bold;
+    font-size: 20px;
+}
+
+.button:hover {
+    border: 2px solid rgb(16, 177, 177);
+    box-shadow: 0 0 15px rgb(4, 214, 214), 0 0 35px rgb(4, 214, 214), 0 0 55px rgb(4, 214, 214), 0 0 100px rgb(4, 214, 214);
+    transition: background-position 0.8s ease-in-out;
+}
+
+@keyframes gradient {
+    0% {
+        background-position: left bottom;
+    }
+
+    100% {
+        background-position: right bottom;
+    }
+}
+
+#dark-mode-toggle {
+    position: fixed;
+    z-index: 999;
+}
+
+#dark-mode-toggle {
+    top: 2.5%;
+    right: 50px;
+    cursor: pointer;
+}
+
+#dark-mode-icon {
+    font-size: 42px;
+    color: cyan;
+}
+
+body.dark-mode {
+    animation: movingColor 10s infinite;
+    background: linear-gradient(180deg, rgb(54, 28, 71) 10%, #20173a 20%, rgb(5, 78, 78) 100%);
+    background-size: 100% 100%;
+    background-attachment: fixed;
+    position: absolute;
+    overflow: hidden;
+    margin: 0;
+    color: rgb(1, 85, 85);
+}
+
+.dark-mode {
+    background-color: #34495e;
+    border: 5px double #0be9f0;
+}
+
+.dark-mode .home-container,
+.dark-mode .section img,
+.dark-mode .section {
+    background-color: #34495e7e;
+    border: 2px double rgb(6, 80, 80);
+}
+
+#github-link {
+    top: 2.5%;
+    left: 50px;
+    cursor: pointer;
+    position: fixed;
+    color: cyan;
+    font-size: 42px;
+}
+
+#github-link:hover,
+#dark-mode-icon:hover {
+    text-shadow: 0 0 15px rgb(4, 214, 214), 0 0 35px rgb(4, 214, 214), 0 0 55px rgb(4, 214, 214), 0 0 100px rgb(4, 214, 214);
+}
+
+.home-container {
+    left: 50%;
+    top: 100px;
+    transform: translate(-50%);
+    position: fixed;
+    margin: 0px auto;
+    width: 1000px;
+    height: 900px;
+    display: flex;
+    flex-direction: column;
+    overflow-y: auto;
+    background-color: #376ea57e;
+    border-radius: 15px;
+    border: 2px double cyan;
+}
+
+.home-container li,
+.home-container p {
+    color: white;
+    font-size: 18px;
+    font-weight: lighter;
+    text-align: center;
+    margin: 0;
+}
+
+.home-container h1{
+    left: 50%;
+    transform: translate(-50%);
+    position: fixed;
+    text-align: center;
+    font-size: 24px;
+    font-weight: bold;
+    color: black;
+}
+
+.logo {
+    cursor: pointer;
+    color: black;
+    font-size: 14px;
+    margin-top: 50px;
+    left: 50%;
+    transform: translate(-25%);
+    position: relative;
+    z-index: 999; 
+}
+
+.section {
+    width: 900px;
+    height: auto;
+    border: 2px double cyan;
+    margin: 50px auto;
+    background-color: #34495e7e;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+.section h {
+    text-align: center;
+    font-size: 24px;
+    font-weight: bold;
+    color: black;
+    margin-top: 20px;
+}
+
+.section img {
+    left: 50%;
+    transform: translate(-50%);
+    position: relative;
+    width: 600px;
+    height: 400px;
+    border: 2px double cyan;
+    margin-top: 70px;
+}
+
+.section p,
+.section li {
+    color: white;
+    font-size: 18px;
+    font-weight: lighter;
+    text-align: center;
+    margin: 0;
+    margin-top: 70px;
+    margin-bottom: 50px;
+}
+
+.section-link {
+    position: fixed;
+    color: black;
+    font-size: 14px;
+    font-weight: bold;
+    left: 90%;
+    transform: translate(-50%);
+    cursor: pointer;
+    margin-top: 0px;
+}
+
+.section-link:hover {
+    color: blue;
+    text-decoration: underline;
+}
