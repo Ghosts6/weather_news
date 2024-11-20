@@ -4,13 +4,17 @@ from django.http import JsonResponse
 from geopy.geocoders import Nominatim
 from geopy.exc import GeocoderUnavailable
 from datetime import datetime
+from dotenv import load_dotenv
 import json
 import pytz
 import requests
 import os
 
-def get_news(api_key, query, count=5):
-    news_url = f'https://newsapi.org/v2/everything?q={query}&apiKey={api_key}&pageSize={count}'
+load_dotenv()
+API_KEY = os.getenv('API_KEY')
+
+def get_news(API_KEY, query, count=5):
+    news_url = f'https://newsapi.org/v2/everything?q={query}&apiKey={API_KEY}&pageSize={count}'
     response = requests.get(news_url)
 
     if response.status_code == 200:
@@ -37,10 +41,10 @@ def get_news(api_key, query, count=5):
 
 
 def home(request):
-    api_key = '0f00a482322f82d0c38ea32028a6eada'  
+    API_KEY = os.getenv('API_KEY')
     cities = ['London', 'Toronto', 'Dubai', 'Tehran', 'New York', 'Los Angeles']
     weather_news_list = []
-    paris_url = f'http://api.openweathermap.org/data/2.5/weather?q=Paris&appid={api_key}'
+    paris_url = f'http://api.openweathermap.org/data/2.5/weather?q=Paris&appid={API_KEY}'
     paris_response = requests.get(paris_url)
 
     if paris_response.status_code == 200:
@@ -76,7 +80,7 @@ def home(request):
             latitude = location.latitude
             longitude = location.longitude
 
-            user_location_url = f'http://api.openweathermap.org/data/2.5/weather?lat={latitude}&lon={longitude}&appid={api_key}'
+            user_location_url = f'http://api.openweathermap.org/data/2.5/weather?lat={latitude}&lon={longitude}&appid={API_KEY}'
             user_location_response = requests.get(user_location_url)
 
         if user_location_response.status_code == 200:
@@ -103,7 +107,7 @@ def home(request):
 
 
     for city in cities:
-        api_url = f'http://api.openweathermap.org/data/2.5/weather?q={city}&appid={api_key}'
+        api_url = f'http://api.openweathermap.org/data/2.5/weather?q={city}&appid={API_KEY}'
         response = requests.get(api_url)
 
         print(response.text)
@@ -138,8 +142,8 @@ def weather(request):
     
     if city_name:
 
-        api_key = '0f00a482322f82d0c38ea32028a6eada'
-        weather_url = f'http://api.openweathermap.org/data/2.5/weather?q={city_name}&appid={api_key}'
+        API_KEY = os.getenv('API_KEY')
+        weather_url = f'http://api.openweathermap.org/data/2.5/weather?q={city_name}&appid={API_KEY}'
         time_url = f'http://worldtimeapi.org/api/timezone/Europe/{city_name}.json'
 
         try:
@@ -204,11 +208,11 @@ def kelvin_to_celsius(kelvin):
     
 def search_weather(request):
     city_name = request.GET.get('city_name', '')
-    api_key = '0f00a482322f82d0c38ea32028a6eada'
+    API_KEY = os.getenv('API_KEY')
 
-    if city_name and api_key:
+    if city_name and API_KEY:
         try:
-            api_url = f'https://api.openweathermap.org/data/2.5/weather?q={city_name}&appid={api_key}'
+            api_url = f'https://api.openweathermap.org/data/2.5/weather?q={city_name}&appid={API_KEY}'
             response = requests.get(api_url)
             data = response.json()
 
