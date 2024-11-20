@@ -1,4 +1,5 @@
 python-ldap
+python-dotenv
 django
 whitenoise
 packaging
@@ -7,3 +8,4 @@ django-cors-headers
 pytz
 geopy
 requests
+
