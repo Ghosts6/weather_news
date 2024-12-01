@@ -1,11 +1,24 @@
-python-ldap
-python-dotenv
-django
-whitenoise
-packaging
-django-auth-ldap
-django-cors-headers
-pytz
-geopy
-requests
+# Core Dependencies for the project
+django # Django web framework
+django-redis      # Redis support for Django (caching, session storage)
+django-auth-ldap  # LDAP authentication for Django
+whitenoise        # Static file serving for production environments
 
+# Environment and configuration
+python-dotenv      # Load environment variables from a .env file
+python-ldap        # LDAP support for Python (used by django-auth-ldap)
+
+# Date and time handling
+pytz               # World timezone support
+
+# External services integration
+geopy              # Geocoding (for location-based features)
+requests           # HTTP library for making requests
+
+# Testing dependencies (Development only)
+pytest             # Unit testing framework
+pytest-django      # Django-specific test tools for pytest
+requests-mock      # Mocking HTTP requests during tests
+
+# Utility
+packaging          # Tools for dealing with Python package versions and distribution
