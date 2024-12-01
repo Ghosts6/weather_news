@@ -286,7 +286,7 @@ def search_suggestions(request):
     city_name = request.GET.get('city_name', '').lower()
 
     try:
-        json_path = '/home/ghost/Desktop/webProject/virtual/climate/climate/fixture/city.list.json'
+        json_path = 'backend/climate/fixture/city.list.json.txt'
         
         with open(json_path, 'r', encoding='utf-8') as file:
             cities = json.load(file)
