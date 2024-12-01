@@ -21,14 +21,6 @@ def test_home_view(api_client):
     assert 'paris_weather_summary' in response.context
     
 @pytest.mark.django_db
-def test_search_weather_valid(api_client):
-    url = reverse('search_suggestions')
-    response = api_client.get(url, {'city_name': 'Paris'})
-
-    assert response.status_code == 200
-    assert response.json().get('success') is True
-
-@pytest.mark.django_db
 def test_search_suggestions_valid(api_client):
     url = reverse('search_suggestions')  
     with patch('builtins.open', mock_open(read_data=json.dumps([
