@@ -6,7 +6,7 @@ __pycache__/
 db.sqlite3
 log.txt
 staticfiles/
-cache/*
+cache/*.djcache
 *.djcache
 
 # Frontend
