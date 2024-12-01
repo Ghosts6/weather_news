@@ -187,7 +187,16 @@ function renderWeatherDetails(data) {
 function showError(message) {
     const errorMessage = document.getElementById('error-message');
     errorMessage.querySelector('p').textContent = message;
-    console.log("Error
+    console.log("Error message set:", message);
+    
+    form.closest('.input-container').classList.add('hidden');
+    weatherDetails.classList.add('hidden');
+    
+    resultContainer.classList.remove('hidden');
+    errorMessage.classList.remove('hidden');
+    errorMessage.classList.add('flex');
+    tryAgainButton.classList.remove('hidden');
+}
 ```
 
 ---
