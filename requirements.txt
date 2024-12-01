@@ -1,5 +1,6 @@
 # Core Dependencies for the project
 django # Django web framework
+djangorestframework #Drf
 django-redis      # Redis support for Django (caching, session storage)
 django-auth-ldap  # LDAP authentication for Django
 whitenoise        # Static file serving for production environments
@@ -19,7 +20,7 @@ requests           # HTTP library for making requests
 pytest             # Unit testing framework
 pytest-django      # Django-specific test tools for pytest
 requests-mock      # Mocking HTTP requests during tests
-mock
+mock               # Mock Module
 
 # Utility
 packaging          # Tools for dealing with Python package versions and distribution
