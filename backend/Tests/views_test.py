@@ -31,12 +31,11 @@ def test_search_weather_valid(api_client):
 @pytest.mark.django_db
 def test_search_suggestions_valid(api_client):
     url = reverse('search_suggestions')  
-    with patch('requests.get') as mock_get:
-        mock_get.return_value = MagicMock(status_code=200, json=MagicMock(return_value=[
-            {'name': 'Paris'},
-            {'name': 'Parma'},
-            {'name': 'Paradise'}
-        ]))
+    with patch('builtins.open', mock_open(read_data=json.dumps([
+        {'name': 'Paris'},
+        {'name': 'Parma'},
+        {'name': 'Paradise'}
+    ]))):
         response = api_client.get(url, {'city_name': 'par'})
         data = response.json()
 
@@ -48,12 +47,11 @@ def test_search_suggestions_valid(api_client):
 @pytest.mark.django_db
 def test_search_suggestions_no_match(api_client):
     url = reverse('search_suggestions')
-    with patch('requests.get') as mock_get:
-        mock_get.return_value = MagicMock(status_code=200, json=MagicMock(return_value=[
-            {'name': 'Paris'},
-            {'name': 'Parma'},
-            {'name': 'Paradise'}
-        ]))
+    with patch('builtins.open', mock_open(read_data=json.dumps([
+        {'name': 'Paris'},
+        {'name': 'Parma'},
+        {'name': 'Paradise'}
+    ]))):
         response = api_client.get(url, {'city_name': 'xyz'})
         data = response.json()
 
