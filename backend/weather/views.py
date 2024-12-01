@@ -282,10 +282,6 @@ def home(request):
 def weather(request):
     return render(request, 'weather.html')
   
-import json
-import requests
-from django.http import JsonResponse
-
 def search_suggestions(request):
     city_name = request.GET.get('city_name', '').lower()
 
