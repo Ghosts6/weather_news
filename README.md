@@ -205,7 +205,7 @@ This video showcases the app's functionality, including how users can search for
 1. **Clone the repository:**
 
    ```bash
-   git clone https://github.com/Ghosts6/Local-website.git
+   git clone https://github.com/Ghosts6/weather_news
    ```
 2. **Install dependencies:**
 
