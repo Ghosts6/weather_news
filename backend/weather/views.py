@@ -296,7 +296,7 @@ def search_suggestions(request):
             with open(json_path, 'r', encoding='utf-8') as file:
                 cities = json.load(file)
         except FileNotFoundError:
-            url = "https://bulk.openweathermap.org/sample/"
+            url = "https://bulk.openweathermap.org/sample/city.list.json.gz"
             response = requests.get(url)
             if response.status_code == 200:
                 cities = json.loads(response.text)
