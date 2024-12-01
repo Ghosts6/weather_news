@@ -41,5 +41,6 @@ jobs:
         cd backend 
         python manage.py collectstatic --no-input
     - name: Run Tests
-      run: | 
+      run: |
+        cd backend 
         python manage.py test
