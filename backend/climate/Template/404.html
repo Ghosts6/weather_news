@@ -1,0 +1,23 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <link rel="icon" type="image/png" sizes="32x32" href="{% static 'fav/favicon-32x32.png'%}">
+    <link rel="icon" type="image/png" sizes="16x16" href="{% static 'fav/favicon-16x16.png'%}">
+    <link rel="manifest" href="/site.webmanifest">
+    <link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5">
+    <link rel="stylesheet" href="{% static 'css/output.css' %}">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="msapplication-TileColor" content="#da532c">
+    <meta name="theme-color" content="#ffffff">   
+    <title>Error 404</title>
+</head>
+<body class="bg-black bg-cover absolute overflow-hidden">
+    <canvas class="fixed top-0 left-0"></canvas>
+    <div class="error fixed top-[40%] left-1/2 -translate-x-1/2 -translate-y-1/2 text-[48px] font-bold text-shadow-error-shadow">
+        Error 404: Page Not Found
+    </div>
+    <script src="{% static 'js/404.js' %}"></script>
+</body>
+</html>
