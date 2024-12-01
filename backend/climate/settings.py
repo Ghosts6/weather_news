@@ -187,47 +187,47 @@ SESSION_CACHE_ALIAS = 'default'
 
 # Test config
 TEST_RUNNER = 'test_runner.PytestTestRunner'
-
+# uncommend for debug
 # Log
-LOGGING = {
-    'version': 1,
-    'disable_existing_loggers': False,
-    'formatters': {
-        'verbose': {
-            'format': '[%(asctime)s] [%(levelname)s] [%(name)s:%(lineno)s] %(message)s',
-            'datefmt': '%Y-%m-%d %H:%M:%S'
-        },
-        'simple': {
-            'format': '[%(asctime)s] [%(levelname)s] %(message)s',
-            'datefmt': '%Y-%m-%d %H:%M:%S'
-        },
-    },
-    'handlers': {
-        'file': {
-            'level': 'INFO',  
-            'class': 'logging.handlers.RotatingFileHandler',
-            'filename': 'climate/Logs/log.txt',
-            'maxBytes': 1024 * 1024 * 15,  
-            'backupCount': 10,
-            'formatter': 'verbose',
-        },
-        'console': {
-            'level': 'INFO',
-            'class': 'logging.StreamHandler',
-            'formatter': 'simple',
-        },
-    },
-    'loggers': {
-        'django': {
-            'handlers': ['file', 'console'],
-            'level': 'INFO',  
-            'propagate': True,
-        },
-        'weather': {
-            'handlers': ['file', 'console'],
-            'level': 'INFO',
-            'propagate': False,
-        },
-    },
-}
+# LOGGING = {
+#     'version': 1,
+#     'disable_existing_loggers': False,
+#     'formatters': {
+#         'verbose': {
+#             'format': '[%(asctime)s] [%(levelname)s] [%(name)s:%(lineno)s] %(message)s',
+#             'datefmt': '%Y-%m-%d %H:%M:%S'
+#         },
+#         'simple': {
+#             'format': '[%(asctime)s] [%(levelname)s] %(message)s',
+#             'datefmt': '%Y-%m-%d %H:%M:%S'
+#         },
+#     },
+#     'handlers': {
+#         'file': {
+#             'level': 'INFO',  
+#             'class': 'logging.handlers.RotatingFileHandler',
+#             'filename': 'climate/Logs/log.txt',
+#             'maxBytes': 1024 * 1024 * 15,  
+#             'backupCount': 10,
+#             'formatter': 'verbose',
+#         },
+#         'console': {
+#             'level': 'INFO',
+#             'class': 'logging.StreamHandler',
+#             'formatter': 'simple',
+#         },
+#     },
+#     'loggers': {
+#         'django': {
+#             'handlers': ['file', 'console'],
+#             'level': 'INFO',  
+#             'propagate': True,
+#         },
+#         'weather': {
+#             'handlers': ['file', 'console'],
+#             'level': 'INFO',
+#             'propagate': False,
+#         },
+#     },
+# }
 
