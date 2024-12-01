@@ -37,8 +37,9 @@ jobs:
         python -m pip install --upgrade pip
         pip install --no-cache-dir -r requirements.txt
     - name: Collect static files
-      run: python manage.py collectstatic --no-input
-    - name: Run Tests
       run: |
-        cd backend  
+        cd backend 
+        python manage.py collectstatic --no-input
+    - name: Run Tests
+      run: | 
         python manage.py test
