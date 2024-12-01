@@ -282,19 +282,30 @@ def home(request):
 def weather(request):
     return render(request, 'weather.html')
   
+import json
+import requests
+from django.http import JsonResponse
+
 def search_suggestions(request):
     city_name = request.GET.get('city_name', '').lower()
 
     try:
         json_path = 'backend/climate/fixture/city.list.json.txt'
-        
-        with open(json_path, 'r', encoding='utf-8') as file:
-            cities = json.load(file)
+
+        try:
+            with open(json_path, 'r', encoding='utf-8') as file:
+                cities = json.load(file)
+        except FileNotFoundError:
+            url = "https://bulk.openweathermap.org/sample/"
+            response = requests.get(url)
+            if response.status_code == 200:
+                cities = json.loads(response.text)
+            else:
+                return JsonResponse({'success': False, 'error': f"Failed to fetch data from URL: {url}"})
 
         suggestions = [city['name'] for city in cities if city_name in city['name'].lower()]
         return JsonResponse({'success': True, 'suggestions': suggestions})
-    except FileNotFoundError:
-        return JsonResponse({'success': False, 'error': 'File not found'})
+
     except json.JSONDecodeError:
         return JsonResponse({'success': False, 'error': 'Error parsing JSON'})
     except Exception as e:
