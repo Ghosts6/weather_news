@@ -19,6 +19,7 @@ requests           # HTTP library for making requests
 pytest             # Unit testing framework
 pytest-django      # Django-specific test tools for pytest
 requests-mock      # Mocking HTTP requests during tests
+mock
 
 # Utility
 packaging          # Tools for dealing with Python package versions and distribution
