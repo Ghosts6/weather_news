@@ -293,6 +293,10 @@ def search_suggestions(request):
 
         suggestions = [city['name'] for city in cities if city_name in city['name'].lower()]
         return JsonResponse({'success': True, 'suggestions': suggestions})
+    except FileNotFoundError:
+        return JsonResponse({'success': False, 'error': 'File not found'})
+    except json.JSONDecodeError:
+        return JsonResponse({'success': False, 'error': 'Error parsing JSON'})
     except Exception as e:
         return JsonResponse({'success': False, 'error': str(e)})
 
