@@ -286,15 +286,19 @@ def search_suggestions(request):
     city_name = request.GET.get('city_name', '').lower()
 
     try:
-        json_path = 'backend/climate/fixture/city.list.json.txt'
+        url = 'https://bulk.openweathermap.org/sample/city.list.json.txt'
         
-        with open(json_path, 'r', encoding='utf-8') as file:
-            cities = json.load(file)
+        response = requests.get(url)
+        response.raise_for_status()  
+
+        cities = response.json()
 
         suggestions = [city['name'] for city in cities if city_name in city['name'].lower()]
+
         return JsonResponse({'success': True, 'suggestions': suggestions})
+    except requests.exceptions.RequestException as e:
+        return JsonResponse({'success': False, 'error': str(e)})
     except Exception as e:
         return JsonResponse({'success': False, 'error': str(e)})
-
 
 
