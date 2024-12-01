@@ -17,23 +17,16 @@ Our goal is to work with APIs, manage their integration, and handle key concepts
 
 ## 💻 Technologies Used:
 
-- **Django** (Backend framework)
-- **Python** (Programming language)
-- **Tailwind CSS** (Styling framework)
-- **JavaScript** (For interactivity)
-- **Font Awesome** (Icons)
-- **DRF (Django Rest Framework)** (API framework)
-- **Redis** (Caching and message brokering)
-- **pytest** (Testing framework)
-- **PostgreSQL** (Database, if applicable)
-  
-![TailwindCSS](https://img.shields.io/badge/tailwindcss-%2338B2AC.svg?style=plastic&logo=tailwind-css&logoColor=white)  
-![Django](https://img.shields.io/badge/django-%23092E20.svg?style=plastic&logo=django&logoColor=white)  
-![Python](https://img.shields.io/badge/python-3670A0?style=plastic&logo=python&logoColor=ffdd54)  
-![JavaScript](https://img.shields.io/badge/javascript-%23323330.svg?style=plastic&logo=javascript&logoColor=%23F7DF1E)  
-![DRF](https://img.shields.io/badge/DRF-%2300B8A1.svg?style=plastic&logo=django&logoColor=white)  
-![Redis](https://img.shields.io/badge/redis-%23D72C25.svg?style=plastic&logo=redis&logoColor=white)  
-![PostgreSQL](https://img.shields.io/badge/PostgreSQL-%23336791.svg?style=plastic&logo=postgresql&logoColor=white)  
+### Technologies Used:
+- ![Django](https://img.shields.io/badge/django-%23092E20.svg?style=plastic&logo=django&logoColor=white) – Backend framework for scalable web applications.
+- ![Python](https://img.shields.io/badge/python-3670A0?style=plastic&logo=python&logoColor=ffdd54) – The programming language powering the backend logic.
+- ![TailwindCSS](https://img.shields.io/badge/tailwindcss-%2338B2AC.svg?style=plastic&logo=tailwind-css&logoColor=white) – A utility-first CSS framework for sleek, responsive designs.
+- ![JavaScript](https://img.shields.io/badge/javascript-%23323330.svg?style=plastic&logo=javascript&logoColor=%23F7DF1E) – Adds interactivity and dynamic behavior to the frontend.
+- ![Font Awesome](https://img.shields.io/badge/font%20awesome-%23F7DF1E.svg?style=plastic&logo=font-awesome&logoColor=black) – A library of scalable vector icons for visual elements.
+- ![DRF](https://img.shields.io/badge/DRF-%2300B8A1.svg?style=plastic&logo=django&logoColor=white) – For building powerful REST APIs.
+- ![Redis](https://img.shields.io/badge/redis-%23D72C25.svg?style=plastic&logo=redis&logoColor=white) – In-memory data store for caching and message brokering.
+- ![pytest](https://img.shields.io/badge/pytest-%232C2A29.svg?style=plastic&logo=pytest&logoColor=white) – A robust testing framework for ensuring code reliability.
+- ![PostgreSQL](https://img.shields.io/badge/PostgreSQL-%23336791.svg?style=plastic&logo=postgresql&logoColor=white) – Relational database system, where applicable for data storage.
 
 ---
 
@@ -196,12 +189,18 @@ function showError(message) {
     errorMessage.querySelector('p').textContent = message;
     console.log("Error
 ```
+
+---
+
 # 🎥 video:
 
 [weather_news.webm](https://github.com/user-attachments/assets/8574d359-b3ba-4bbf-86c3-27c07d835dcb)
+
 This video showcases the app's functionality, including how users can search for cities and view the weather data in real time.
 
-🚀 How to Run:
+---
+
+# 🚀 How to Run:
 
 1. **Clone the repository:**
 
