@@ -1,0 +1,202 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+body::-webkit-scrollbar {
+  width: 12px;
+}
+
+body::-webkit-scrollbar-track {
+  background: var(--tw-scrollbar-track);
+  border-radius: 10px;
+}
+
+body::-webkit-scrollbar-thumb {
+  background-color: var(--tw-scrollbar-thumb);
+  border-radius: 10px;
+  border: 3px solid var(--tw-scrollbar-track);
+}
+
+body::-webkit-scrollbar-thumb:hover {
+  background-color: #1ad50d; 
+}
+
+body.dark::-webkit-scrollbar-thumb {
+  background-color: #0be9f0; 
+}
+
+body.dark::-webkit-scrollbar-thumb:hover {
+  background-color: #1ad50d; 
+}
+
+@layer base {
+  body {
+    @apply m-0 p-5 sm:p-4 md:p-6 font-sans text-white bg-gradient-to-br from-[#e1d0b1] via-[#a3b8c9] to-[#9cd1d1] bg-fixed animate-movingColor scrollbar scrollbar-thin scrollbar-thumb-[#5a5a5a] scrollbar-track-[#e3e3e3] dark:bg-gradient-to-br dark:from-[#292738] dark:via-[#3c3750] dark:to-[#565d7b] dark:text-white dark:scrollbar-track-[#3c3750] dark:scrollbar-thumb-[#0be9f0];
+  }
+
+  #particles-js {
+    @apply w-full h-full fixed top-0 left-0 z-[-1];
+  }
+}
+
+@layer components {
+  .home-main {
+    @apply relative mx-auto w-[calc(100%_-_2rem)] max-w-[1000px] min-h-screen pb-[100px] bg-[#d7dbdd70] flex flex-col overflow-y-auto bg-opacity-80 border-[4px] border-double border-[#7fb3d5] rounded-lg dark:bg-opacity-80 dark:bg-[#34495e] dark:border-[#065050];
+  }
+
+  .search-container {
+    @apply relative mx-auto w-[calc(100%_-_2rem)] max-w-[1000px] h-[80vh] pb-[100px] bg-[#d7dbdd70] flex flex-col overflow-hidden bg-opacity-80 border-[4px] border-double border-[#7fb3d5] rounded-lg dark:bg-opacity-80 dark:bg-[#34495e] dark:border-[#065050];
+  }
+
+  section {
+    @apply flex flex-col justify-between mt-[50px] mx-auto w-[calc(100%_-_2rem)] max-w-[900px] bg-[#d7dbdd70] h-auto bg-opacity-80 border-2 border-solid border-[#7fb3d5] rounded-sm dark:bg-opacity-80 dark:bg-[#34495e] dark:border-[#065050];
+  }
+
+  section img {
+    @apply relative left-1/2 -translate-x-1/2 w-[600px] h-[400px] border-[1px] border-solid border-white mt-[50px] mb-[25px] rounded-lg shadow-lg dark:border-black dark:shadow-xl dark:brightness-90;
+  }
+
+  .title {
+    @apply absolute left-1/2 -translate-x-1/2  text-center text-[28px] sm:text-[32px] md:text-[36px] font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-[#9cd1d1] to-[#7fb3d5] dark:from-[#0B5563] dark:to-[#065050] drop-shadow-lg transition-all;
+  }
+
+  .news-description,
+  .search-description {
+    @apply text-left text-[16px] sm:text-[18px] md:text-[20px] font-medium text-gray-800 dark:text-gray-300 leading-relaxed mx-auto mt-[75px] px-4 sm:px-6 transition-all ease-in-out duration-300;
+  }
+
+  .button-search,
+  .button-home {
+    @apply relative mx-auto px-6 py-3 mt-5 text-[16px] md:text-[18px] font-semibold text-white transition-all duration-300 ease-in-out transform bg-gradient-to-tr from-[#9cd1d1] to-[#7fb3d5] shadow-lg rounded-lg cursor-pointer hover:from-[#00ffff] hover:to-[#008080] hover:shadow-xl active:scale-95 active:bg-[#00ced1] dark:bg-gradient-to-tr dark:from-[#0B5563] dark:to-[#065050] dark:hover:from-[#008080] dark:hover:to-[#0be9f0] dark:active:bg-[#007070];
+  }
+  
+  .section-link {
+    @apply text-[#007BFF] font-bold underline transition-colors duration-300 hover:text-[#0056b3] dark:text-[#00E0FF] dark:hover:text-[#007BFF];
+  }
+
+  .news-list {
+    @apply flex flex-col gap-6 mt-16 px-6 md:px-8 lg:px-10 w-full max-w-[900px] mx-auto;
+  }
+
+  .news-item {
+    @apply flex flex-col bg-white dark:bg-[#2c3e50] p-4 rounded-lg shadow-lg transition-all pt-[5%] hover:shadow-xl border border-[#e0e0e0] dark:border-[#34495e];
+  }
+
+  .news-title {
+    @apply text-xl font-bold text-[#333] dark:text-white mb-2;
+  }
+
+  .news-description {
+    @apply text-base text-[#555] dark:text-[#ccc] mb-4 leading-relaxed;
+  }
+
+  .suggestions-container {
+    @apply max-h-[300px] overflow-y-auto border border-[#ccc] rounded-lg shadow-md bg-white z-10 absolute top-full left-0;
+  }
+
+  .suggestions-container div {
+    @apply p-2 cursor-pointer transition-colors duration-300 ease-in-out;
+  }
+
+  .suggestions-container div:hover {
+    @apply bg-[#f1f1f1] text-[#2c3e50];
+  }
+
+  .suggestions-container div:active {
+    @apply bg-[#e2e2e2];
+  }
+
+  .suggestions-container div:focus {
+    @apply outline-none bg-[#e1f5fe];
+  }
+
+  .weather-details {
+    @apply flex flex-col justify-center items-center gap-5 mt-[10vh] w-[80%] md:w-[70%] mx-auto;
+  }
+
+  .city-info {
+    @apply text-center p-6 bg-gradient-to-r from-[#6a7f8d] to-[#4a5f68] rounded-lg shadow-xl mb-6;
+  }
+
+  .subtitle {
+    @apply text-xl font-semibold text-[#2c3e50] dark:text-white mt-2;
+  }
+
+  .weather-summary {
+    @apply text-lg text-[#d1d1d1] mt-4;
+  }
+
+  .hourly-weather {
+    @apply flex gap-6 p-4 overflow-x-auto scrollbar-thin scrollbar-thumb-[#7fb3d5] dark:scrollbar-thumb-[#065050] rounded-lg text-[#2c3e50] dark:text-white bg-white dark:bg-[#2e3a45] shadow-lg;
+  }
+
+  .hour-card {
+    @apply min-w-[120px] flex flex-col items-center text-[#34495e] dark:text-white bg-[#d7dbdd] dark:bg-[#34495e] p-4 rounded-xl shadow-lg transform transition-all hover:scale-105 hover:shadow-xl hover:bg-[#e1e9f0] dark:hover:bg-[#2c3e50];
+  }
+
+  .weather-icon {
+    @apply w-[50px] h-[50px] object-contain mb-2;
+  }
+
+  .hour-time {
+    @apply text-xl font-medium text-[#34495e] dark:text-white;
+  }
+
+  .hour-temp {
+    @apply text-xl font-semibold text-[#2c3e50] dark:text-white mt-2;
+  }
+}
+
+@layer utilities {
+  .hover\:scale-110 {
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+  }
+  .hover\:rotate-180 {
+    transition: transform 0.3s ease;
+  }
+}
+
+body {
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+    sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+code {
+  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
+    monospace;
+}
+
+.error {
+  background: linear-gradient(
+      to right,green, 
+      blue, purple, red,
+      darkblue,darkgreen,darkred
+      );
+  -webkit-background-clip: text;
+  color: transparent;
+  background-position: left bottom;
+  transition: background-position 0.5s ease-in-out;
+  background-size: 300%;
+  animation: shine 12s linear infinite;
+}
+
+.result-container,
+.input-container {
+    transition: all 0.3s ease-in-out;
+}
+.opacity-0 {
+    opacity: 0;
+}
+.opacity-100 {
+    opacity: 1;
+}
+.translate-y-4 {
+    transform: translateY(1rem);
+}
+.translate-y-0 {
+    transform: translateY(0);
+}
