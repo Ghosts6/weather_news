@@ -2,7 +2,7 @@ name: Django CI
 
 on:
   push:
-    branches: [ "main" ]
+    branches: [ "main", "migrate" ]
   pull_request:
     branches: [ "main" ]
 

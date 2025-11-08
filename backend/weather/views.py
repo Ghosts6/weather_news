@@ -4,7 +4,6 @@ from django.shortcuts import render, redirect
 from django.http import JsonResponse
 from geopy.geocoders import Nominatim
 from geopy.exc import GeocoderUnavailable
-from dotenv import load_dotenv
 import json
 import pytz
 import requests
@@ -12,7 +11,6 @@ import time
 import os
 
 # Load environment variables
-load_dotenv()
 API_KEY = os.getenv('API_KEY')
 NEWS_API_KEY = os.getenv('NEWS_API_KEY')
 WEATHER_API_KEY = os.getenv('WEATHER_API_KEY')
