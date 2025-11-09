@@ -1,7 +1,7 @@
 module.exports = {
   content: [
+    "./index.html",
     "./src/**/*.{js,jsx,ts,tsx}",
-    "../backend/climate/Template/*.html"
   ],
   darkMode: 'class',
   theme: {

@@ -203,83 +203,53 @@ def format_weather_data(weather_data):
         humidity = weather_data['main']['humidity']
         wind_speed = weather_data['wind']['speed']
 
-        return f"""
-            ## Current Weather in {city_name}:
-
-            * Description: {description}
-            * Temperature: {temperature:.2f}°C
-            * Feels Like: {feels_like:.2f}°C
-            * Humidity: {humidity}%
-            * Wind Speed: {wind_speed:.2f} m/s
-        """
+        return {
+            "city_name": city_name,
+            "description": description,
+            "temperature": f"{temperature:.2f}°C",
+            "feels_like": f"{feels_like:.2f}°C",
+            "humidity": f"{humidity}%",
+            "wind_speed": f"{wind_speed:.2f} m/s",
+        }
     except KeyError as e:
         print(f"Error formatting weather data: {e}")
-        return "Incomplete weather data."
+        return {"error": "Incomplete weather data."}
 
-### VIEWS ###
-@cache_page(60 * 15)
-def home(request):
-    default_lat = 40.7128
-    default_lon = -74.0060
-    user_location_summary = "Displaying default weather for New York."
+def get_news_view(request):
+    query = request.GET.get('query', '')
+    if not query:
+        return JsonResponse({'error_message': 'Query is required'}, status=400)
+    
+    news = get_news(query)
+    return JsonResponse({'news': news})
 
-    try:
-        default_weather_data = fetch_weather_by_coordinates(default_lat, default_lon)
-        if default_weather_data:
-            user_location_summary = format_weather_data(default_weather_data)
-    except Exception as e:
-        print(f"Error fetching default weather for New York: {e}")
-
+def get_user_location_view(request):
     user_ip = fetch_user_ip()
     if user_ip:
         location_string = get_location_from_ip(user_ip)
         if location_string:
             try:
-                print(f"User IP location: {location_string}")
-                location_details = location_string.split(',')[0] 
-                geolocation_data = fetch_weather_by_coordinates(default_lat, default_lon)
-                if geolocation_data:
-                    weather_data = fetch_weather_by_coordinates(
-                        geolocation_data['coord']['lat'],
-                        geolocation_data['coord']['lon']
-                    )
-                    if weather_data:
-                        user_location_summary = format_weather_data(weather_data)
-                    else:
-                        user_location_summary = "Failed to fetch precise weather data."
+                city_name = location_string.split(',')[0]
+                weather_data = get_weather_data_for_city(city_name)
+                if weather_data:
+                    return JsonResponse(weather_data)
                 else:
-                    user_location_summary = "Fallback to default weather as geolocation failed."
+                    return JsonResponse({'error_message': 'Failed to fetch weather data for your location'}, status=500)
             except Exception as e:
-                print(f"Geolocation error: {e}")
-        else:
-            print("Location unavailable from IP, using default weather.")
-    else:
-        print("Failed to fetch user IP. Using New York as default.")
+                return JsonResponse({'error_message': f'Error processing location: {str(e)}'}, status=500)
+    
+    return JsonResponse({'error_message': 'Failed to determine your location'}, status=500)
 
-    paris_weather_summary = "Failed to fetch weather data for Paris."
+def get_weather_data_for_city(city_name):
+    weather_url = f'http://api.openweathermap.org/data/2.5/weather?q={city_name}&appid={API_KEY}'
     try:
-        paris_weather_data = fetch_weather_by_coordinates(48.8566, 2.3522)
-        if paris_weather_data:
-            paris_weather_summary = format_weather_data(paris_weather_data)
+        response = requests.get(weather_url)
+        if response.status_code == 200:
+            return format_weather_data(response.json())
     except Exception as e:
-        print(f"Error fetching Paris weather: {e}")
+        print(f"Error fetching weather data for {city_name}: {e}")
+    return None
 
-    tornado_news = get_news('tornado', 5)
-    storm_news = get_news('storm', 5)
-    flood_news = get_news('flood', 5)
-
-    return render(request, 'home.html', context={
-        'user_location_summary': user_location_summary,
-        'paris_weather_summary': paris_weather_summary,
-        'tornado_news': tornado_news,
-        'storm_news': storm_news,
-        'flood_news': flood_news,
-    })
-
-@cache_page(60 * 15)
-def weather(request):
-    return render(request, 'weather.html')
-  
 def search_suggestions(request):
     city_name = request.GET.get('city_name', '').lower()
 
@@ -304,5 +274,3 @@ def search_suggestions(request):
         return JsonResponse({'success': False, 'error': 'Error parsing JSON'})
     except Exception as e:
         return JsonResponse({'success': False, 'error': str(e)})
-
-

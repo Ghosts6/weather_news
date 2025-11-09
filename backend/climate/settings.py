@@ -39,8 +39,7 @@ SECRET_KEY = os.getenv('SECRET_KEY')
 # ]
 
 CORS_ALLOWED_ORIGINS = [
-    "http://localhost:home",
-    "http://localhost:weather",
+    "http://localhost:3000",
 ]
 
 # Site and Domain Settings
@@ -61,11 +60,12 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'weather',
+    'corsheaders',
 ]
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
-    'whitenoise.middleware.WhiteNoiseMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -146,11 +146,6 @@ MEDIA_ROOT = BASE_DIR / 'media'
 
 
 STATIC_URL = '/static/'
-STATIC_ROOT = BASE_DIR / 'staticfiles'
-STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
-STATICFILES_DIRS = [
-    BASE_DIR / 'climate/static',
-]
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 # Default primary key field type
