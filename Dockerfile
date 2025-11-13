@@ -1,25 +1,35 @@
-# Use an official Python runtime as a parent image
-FROM python:3.11-slim
+# Use stable, multi-arch Python image
+FROM python:3.11-alpine
 
-# Set environment variables
-ENV PYTHONDONTWRITEBYTECODE=1
-ENV PYTHONUNBUFFERED=1
+# Environment
+ENV PYTHONDONTWRITEBYTECODE=1 \
+    PYTHONUNBUFFERED=1
 
-# Set the working directory in the container
 WORKDIR /app
 
-# Install system dependencies
-RUN apt-get update && apt-get install -y build-essential libsasl2-dev python3-dev libldap2-dev
+# Install build dependencies
+RUN apk add --no-cache \
+    build-base \
+    cyrus-sasl-dev \
+    openldap-dev \
+    openssl-dev \
+    python3-dev
 
-# Install dependencies
-COPY requirements.txt /app/
+# Upgrade pip/setuptools to avoid pyproject.toml build issues
+RUN pip install --upgrade pip setuptools wheel
+
+# Copy dependency file first (leverage cache)
+COPY requirements.txt .
+
+# Install Python dependencies
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Copy the Django app code into the container
-COPY backend/ /app/
+# Copy Django app
+COPY backend/ .
 
-# Expose the port the app runs on
+# Expose app port
 EXPOSE 8000
 
-# Run the Django development server
+# Default command
 CMD ["python", "manage.py", "runserver", "0.0.0.0:8000"]
+

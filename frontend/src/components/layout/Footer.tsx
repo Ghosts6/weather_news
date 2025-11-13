@@ -1,11 +1,22 @@
 import React from 'react';
 
-const Footer: React.FC = () => {
+interface FooterProps {
+  navigation: React.ReactNode;
+}
+
+const Footer: React.FC<FooterProps> = ({ navigation }) => {
   return (
-    <footer className="w-full h-14 flex items-center justify-center px-4 transition-all ease-in-out relative">
-      <p className="text-white">
-        © {new Date().getFullYear()} Weather News. All Rights Reserved.
-      </p>
+    <footer className="fixed bottom-0 left-0 w-full h-14 flex items-center justify-between px-4 transition-all ease-in-out z-10">
+      <div className="flex-1 text-left">
+      </div>
+      <div className="flex-none">
+        {navigation}
+      </div>
+      <div className="flex-1 text-right">
+        <p className="text-white">
+          © {new Date().getFullYear()} Weather News. kb.
+        </p>
+      </div>
     </footer>
   );
 };

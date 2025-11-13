@@ -1,6 +1,5 @@
 import express from 'express';
 import { createProxyMiddleware } from 'http-proxy-middleware';
-import esbuild from 'esbuild';
 import path from 'path';
 import { fileURLToPath } from 'url';
 
@@ -20,20 +19,10 @@ app.use('/api', createProxyMiddleware({
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(express.static(path.join(__dirname, '.')));
 
+app.get('*', (req, res) => {
+  res.sendFile(path.join(__dirname, 'index.html'));
+});
 
-// esbuild watch and serve
-esbuild.context({
-  entryPoints: ['src/index.tsx'],
-  bundle: true,
-  outfile: 'dist/main.js',
-  loader: { '.tsx': 'tsx' },
-}).then(ctx => {
-  ctx.watch();
-  app.get('*', (req, res) => {
-    res.sendFile(path.join(__dirname, 'index.html'));
-  });
-
-  app.listen(port, () => {
-    console.log(`Frontend server listening at http://localhost:${port}`);
-  });
-}).catch(() => process.exit(1));
+app.listen(port, () => {
+  console.log(`Frontend server listening at http://localhost:${port}`);
+});

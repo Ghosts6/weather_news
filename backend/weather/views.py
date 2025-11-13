@@ -79,7 +79,7 @@ def get_location_from_ip(user_ip):
             return f"{data.get('city', 'Unknown City')}, {data.get('region', 'Unknown Region')}, {data.get('country_name', 'Unknown Country')}"
         elif response.status_code == 429:
             print("Rate limit exceeded. Falling back to default location.")
-            return "Fallback City, Fallback Region, Fallback Country"
+            return "Toronto, Ontario, Canada"
         else:
             print(f"Failed IP location fetch. Status Code: {response.status_code}")
     except Exception as e:
@@ -227,25 +227,35 @@ def get_user_location_view(request):
     user_ip = fetch_user_ip()
     if user_ip:
         location_string = get_location_from_ip(user_ip)
-        if location_string:
+        if location_string and location_string != "Location Unavailable" and "Unknown" not in location_string:
             try:
                 city_name = location_string.split(',')[0]
                 weather_data = get_weather_data_for_city(city_name)
-                if weather_data:
+                if weather_data and "error" not in weather_data:
                     return JsonResponse(weather_data)
-                else:
-                    return JsonResponse({'error_message': 'Failed to fetch weather data for your location'}, status=500)
             except Exception as e:
-                return JsonResponse({'error_message': f'Error processing location: {str(e)}'}, status=500)
-    
-    return JsonResponse({'error_message': 'Failed to determine your location'}, status=500)
+                print(f"Error processing location: {e}")
+
+    # If we are here, it means we failed to get user's location or weather.
+    # Let's return weather for Toronto as a fallback.
+    weather_data = get_weather_data_for_city("Toronto")
+    if weather_data and "error" not in weather_data:
+        return JsonResponse(weather_data)
+
+    return JsonResponse({'error_message': 'Failed to determine your location and fallback location.'}, status=500)
 
 def get_weather_data_for_city(city_name):
+    if not API_KEY:
+        print("API_KEY for OpenWeather is not set.")
+        return None
     weather_url = f'http://api.openweathermap.org/data/2.5/weather?q={city_name}&appid={API_KEY}'
     try:
         response = requests.get(weather_url)
         if response.status_code == 200:
             return format_weather_data(response.json())
+        else:
+            print(f"Error fetching weather data for {city_name}: {response.status_code} - {response.text}")
+            return None
     except Exception as e:
         print(f"Error fetching weather data for {city_name}: {e}")
     return None

@@ -4,7 +4,11 @@
   "type": "module",
   "main": "index.js",
   "scripts": {
-    "start": "node --loader ts-node/esm dev.ts",
+    "start": "npm run dev",
+    "dev": "concurrently \"npm:watch:css\" \"npm:watch:js\" \"node --loader ts-node/esm dev.ts\"",
+    "watch:css": "tailwindcss -i ./src/input.css -o ./public/css/output.css --watch",
+    "watch:js": "esbuild src/index.tsx --bundle --outfile=dist/main.js --loader:.tsx=tsx --watch",
+    "build:css": "tailwindcss -i ./src/input.css -o ./public/css/output.css",
     "build": "esbuild src/index.tsx --bundle --outfile=dist/main.js --loader:.tsx=tsx",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
@@ -18,6 +22,7 @@
     "@types/react": "^19.2.2",
     "@types/react-dom": "^19.2.2",
     "autoprefixer": "^10.4.20",
+    "concurrently": "^8.2.2",
     "esbuild": "^0.25.12",
     "express": "^4.19.2",
     "http-proxy-middleware": "^3.0.0",
@@ -27,6 +32,9 @@
     "typescript": "^5.9.3"
   },
   "dependencies": {
+    "@tsparticles/engine": "^3.9.1",
+    "@tsparticles/react": "^3.0.0",
+    "@tsparticles/slim": "^3.9.1",
     "axios": "^1.13.2",
     "react": "^19.2.0",
     "react-dom": "^19.2.0",

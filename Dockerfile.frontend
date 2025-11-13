@@ -1,20 +1,22 @@
-# Use an official Node.js runtime as a parent image
-FROM node:18-alpine
+# Use stable Node base image
+FROM node:18
 
-# Set the working directory in the container
+# Set working directory
 WORKDIR /app/frontend
 
-# Copy package.json and package-lock.json
+# Copy dependency definitions first (to leverage Docker cache)
 COPY frontend/package*.json ./
 
 # Install dependencies
-RUN npm install
+RUN npm install -g esbuild@0.25.12 && \
+    npm install
 
-# Copy the rest of the frontend code
+# Copy the rest of the frontend source
 COPY frontend/ .
 
-# Expose the port the app runs on
+# Expose port
 EXPOSE 3000
 
-# Run the frontend development server
+# Default command
 CMD ["npm", "start"]
+

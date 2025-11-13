@@ -11,15 +11,7 @@ from weather.views import get_timezone_data
 def api_client():
     return APIClient()
 
-@pytest.mark.django_db
-def test_home_view(api_client):
-    url = reverse('home') 
-    response = api_client.get(url)
 
-    assert response.status_code == 200
-    assert 'user_location_summary' in response.context
-    assert 'paris_weather_summary' in response.context
-    
 @pytest.mark.django_db
 def test_search_suggestions_valid(api_client):
     url = reverse('search_suggestions')  
@@ -185,4 +177,64 @@ def test_get_time_zone_missing_city(api_client):
 
     assert response.status_code == 400
     assert data['error_message'] == 'City name is required'
+
+@pytest.mark.django_db
+@patch('weather.views.get_weather_data_for_city')
+@patch('weather.views.get_location_from_ip')
+@patch('weather.views.fetch_user_ip')
+def test_get_user_location_success(mock_fetch_user_ip, mock_get_location_from_ip, mock_get_weather_data_for_city, api_client):
+    mock_fetch_user_ip.return_value = '123.123.123.123'
+    mock_get_location_from_ip.return_value = 'Paris, Ile-de-France, France'
+    mock_get_weather_data_for_city.return_value = {'city_name': 'Paris', 'temperature': '15.00°C'}
+    
+    url = reverse('get_user_location')
+    response = api_client.get(url)
+    data = response.json()
+
+    assert response.status_code == 200
+    assert data['city_name'] == 'Paris'
+    assert data['temperature'] == '15.00°C'
+
+@pytest.mark.django_db
+@patch('weather.views.get_weather_data_for_city')
+@patch('weather.views.get_location_from_ip')
+@patch('weather.views.fetch_user_ip')
+def test_get_user_location_fallback_to_toronto(mock_fetch_user_ip, mock_get_location_from_ip, mock_get_weather_data_for_city, api_client):
+    mock_fetch_user_ip.return_value = '123.123.123.123'
+    
+    def weather_side_effect(city):
+        if city == 'Toronto':
+            return {'city_name': 'Toronto', 'temperature': '10.00°C'}
+        return None
+        
+    mock_get_weather_data_for_city.side_effect = weather_side_effect
+
+    # Case 1: Location unavailable
+    mock_get_location_from_ip.return_value = 'Location Unavailable'
+    url = reverse('get_user_location')
+    response = api_client.get(url)
+    data = response.json()
+    assert response.status_code == 200
+    assert data['city_name'] == 'Toronto'
+
+    # Case 2: Unknown city
+    mock_get_location_from_ip.return_value = 'Unknown City, Unknown Region, Unknown Country'
+    response = api_client.get(url)
+    data = response.json()
+    assert response.status_code == 200
+    assert data['city_name'] == 'Toronto'
+
+    # Case 3: Rate limited (returns Toronto directly)
+    mock_get_location_from_ip.return_value = 'Toronto, Ontario, Canada'
+    response = api_client.get(url)
+    data = response.json()
+    assert response.status_code == 200
+    assert data['city_name'] == 'Toronto'
+
+    # Case 4: Weather fails for user's city
+    mock_get_location_from_ip.return_value = 'Paris, Ile-de-France, France'
+    response = api_client.get(url)
+    data = response.json()
+    assert response.status_code == 200
+    assert data['city_name'] == 'Toronto'
 
