@@ -2,7 +2,7 @@ import React from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import HomePage from './pages/HomePage';
 import WeatherPage from './pages/WeatherPage';
-import NotFoundPage from './pages/NotFoundPage';
+import ErrorPage from './pages/ErrorPage';
 
 const App: React.FC = () => {
   return (
@@ -10,7 +10,14 @@ const App: React.FC = () => {
       <Routes>
         <Route path="/" element={<HomePage />} />
         <Route path="/weather" element={<WeatherPage />} />
-        <Route path="*" element={<NotFoundPage />} />
+        <Route 
+          path="*" 
+          element={<ErrorPage code={404} message="Page Not Found" />} 
+        />
+        <Route 
+          path="/500" 
+          element={<ErrorPage code={500} message="Internal Server Error" />} 
+        />
       </Routes>
     </Router>
   );

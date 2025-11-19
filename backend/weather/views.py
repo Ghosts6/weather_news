@@ -1,14 +1,19 @@
 from django.views.decorators.cache import cache_page
+from django.views.decorators.http import require_http_methods
 from datetime import datetime, timedelta
 from django.shortcuts import render, redirect
-from django.http import JsonResponse
+from django.http import JsonResponse, HttpResponse
 from geopy.geocoders import Nominatim
 from geopy.exc import GeocoderUnavailable
+from functools import lru_cache
 import json
 import pytz
 import requests
 import time
 import os
+
+import logging
+logger = logging.getLogger(__name__)
 
 # Load environment variables
 API_KEY = os.getenv('API_KEY')
@@ -206,10 +211,10 @@ def format_weather_data(weather_data):
         return {
             "city_name": city_name,
             "description": description,
-            "temperature": f"{temperature:.2f}°C",
-            "feels_like": f"{feels_like:.2f}°C",
-            "humidity": f"{humidity}%",
-            "wind_speed": f"{wind_speed:.2f} m/s",
+            "temperature": temperature,
+            "feels_like": feels_like,
+            "humidity": humidity,
+            "wind_speed": wind_speed,
         }
     except KeyError as e:
         print(f"Error formatting weather data: {e}")
@@ -259,6 +264,122 @@ def get_weather_data_for_city(city_name):
     except Exception as e:
         print(f"Error fetching weather data for {city_name}: {e}")
     return None
+
+# Cache tiles for 1 hour (3600 seconds)
+@cache_page(60 * 60)
+@require_http_methods(["GET"])
+def map_tile_proxy(request, layer, z, x, y):
+    """
+    Proxy for OpenWeatherMap tiles with caching and error handling.
+    
+    Args:
+        layer: Weather layer type (temp_new, precipitation_new, wind_new, clouds_new)
+        z: Zoom level
+        x: Tile X coordinate
+        y: Tile Y coordinate
+    """
+    api_key = os.getenv('API_KEY')
+    
+    if not api_key:
+        logger.error("API_KEY not found in environment variables")
+        return HttpResponse("API key not configured", status=500)
+    
+    # Construct the OpenWeatherMap tile URL
+    url = f"https://tile.openweathermap.org/map/{layer}/{z}/{x}/{y}.png?appid={api_key}"
+    
+    try:
+        # Use a session for connection pooling (better performance)
+        # You should create this session once at module level in production
+        response = requests.get(
+            url,
+            stream=True,
+            timeout=5,  # 5 second timeout
+            headers={
+                'User-Agent': 'WeatherApp/1.0',
+            }
+        )
+        response.raise_for_status()
+        
+        # Create response with proper caching headers
+        django_response = HttpResponse(
+            response.content,
+            content_type=response.headers.get('Content-Type', 'image/png')
+        )
+        
+        # Add cache headers for browser caching
+        django_response['Cache-Control'] = 'public, max-age=3600'  # Cache for 1 hour
+        django_response['Expires'] = response.headers.get('Expires', '')
+        
+        return django_response
+        
+    except requests.exceptions.Timeout:
+        logger.error(f"Timeout fetching tile: {layer}/{z}/{x}/{y}")
+        return HttpResponse("Request timeout", status=504)
+        
+    except requests.exceptions.RequestException as e:
+        logger.error(f"Error fetching tile {layer}/{z}/{x}/{y}: {str(e)}")
+        return HttpResponse("Error fetching tile", status=500)
+
+
+_session = None
+
+def get_session():
+    """Get or create a requests session for connection pooling."""
+    global _session
+    if _session is None:
+        _session = requests.Session()
+        # Configure connection pooling
+        adapter = requests.adapters.HTTPAdapter(
+            pool_connections=10,
+            pool_maxsize=20,
+            max_retries=3
+        )
+        _session.mount('https://', adapter)
+    return _session
+
+
+@cache_page(60 * 60)
+@require_http_methods(["GET"])
+def map_tile_proxy_optimized(request, layer, z, x, y):
+    """
+    Optimized proxy using connection pooling.
+    """
+    api_key = os.getenv('API_KEY')
+    
+    if not api_key:
+        logger.error("API_KEY not found in environment variables")
+        return HttpResponse("API key not configured", status=500)
+    
+    url = f"https://tile.openweathermap.org/map/{layer}/{z}/{x}/{y}.png?appid={api_key}"
+    
+    try:
+        session = get_session()
+        response = session.get(
+            url,
+            stream=True,
+            timeout=5,
+            headers={'User-Agent': 'WeatherApp/1.0'}
+        )
+        response.raise_for_status()
+        
+        django_response = HttpResponse(
+            response.content,
+            content_type=response.headers.get('Content-Type', 'image/png')
+        )
+        
+        # Aggressive caching
+        django_response['Cache-Control'] = 'public, max-age=3600'
+        django_response['ETag'] = f'"{layer}-{z}-{x}-{y}"'
+        
+        return django_response
+        
+    except requests.exceptions.Timeout:
+        logger.error(f"Timeout fetching tile: {layer}/{z}/{x}/{y}")
+        return HttpResponse("Request timeout", status=504)
+        
+    except requests.exceptions.RequestException as e:
+        logger.error(f"Error fetching tile {layer}/{z}/{x}/{y}: {str(e)}")
+        return HttpResponse("Error fetching tile", status=500)
 
 def search_suggestions(request):
     city_name = request.GET.get('city_name', '').lower()

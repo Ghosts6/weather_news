@@ -1,204 +1,59 @@
-import React, { useCallback } from "react";
-import Particles from "@tsparticles/react";
-import type { Engine } from "@tsparticles/engine";
-import { loadSlim } from "@tsparticles/slim"; 
-import type { ISourceOptions } from "@tsparticles/engine";
+import React, { useMemo } from 'react';
 
 const DarkModeBackground: React.FC = () => {
-  const particlesInit = useCallback(async (engine: Engine) => {
-    await loadSlim(engine);
+  const starBoxShadow = useMemo(() => {
+    const numStars = 300;
+    return Array.from({ length: numStars })
+      .map(() => `${Math.random() * 1920}px ${Math.random() * 1000}px #fff`)
+      .join(', ');
   }, []);
 
-  const particlesLoaded = useCallback(async (container: any) => {
-    console.log("Particles loaded successfully!", container);
+  const meteorData = useMemo(() => {
+    const numMeteors = 8;
+    return Array.from({ length: numMeteors }).map(() => {
+      const duration = Math.random() * 7 + 3;
+      const delay = -(Math.random() * duration);
+
+      return {
+        top: `${Math.random() * 250 + 50}px`,
+        left: `${Math.random() * 90 + 9}%`,
+        duration: `${duration}s`,
+        delay: `${delay}s`,
+      };
+    });
   }, []);
 
-  const options: ISourceOptions = {
-    fullScreen: {
-      enable: false,
-      zIndex: 0,
-    },
-    background: {
-      color: {
-        value: "transparent",
-      },
-    },
-    fpsLimit: 120,
-    interactivity: {
-      events: {
-        onClick: {
-          enable: false,
-        },
-        onHover: {
-          enable: false,
-        },
-        resize: {
-          enable: true,
-          delay: 0.5,
-        },
-      },
-    },
-    particles: {
-      color: {
-        value: "#ffffff",
-      },
-      move: {
-        enable: false,
-      },
-      number: {
-        density: {
-          enable: true,
-          width: 1920,
-          height: 1080,
-        },
-        value: 200,
-      },
-      opacity: {
-        value: {
-          min: 0.3,
-          max: 1,
-        },
-        animation: {
-          enable: true,
-          speed: 1,
-          sync: false,
-        },
-      },
-      shape: {
-        type: "circle",
-      },
-      size: {
-        value: {
-          min: 1,
-          max: 3,
-        },
-      },
-    },
-    detectRetina: true,
-  };
-
-  // Shooting star configuration
-  const shootingStarOptions: ISourceOptions = {
-    fullScreen: {
-      enable: false,
-      zIndex: 1,
-    },
-    background: {
-      color: {
-        value: "transparent",
-      },
-    },
-    fpsLimit: 120,
-    particles: {
-      number: {
-        value: 0,
-      },
-      color: {
-        value: "#ffffff",
-      },
-      shape: {
-        type: "circle",
-      },
-      opacity: {
-        value: 1,
-      },
-      size: {
-        value: 3,
-      },
-      move: {
-        enable: true,
-        speed: 20,
-        direction: "bottom-right",
-        straight: true,
-        outModes: {
-          default: "destroy",
-        },
-      },
-      life: {
-        duration: {
-          value: 2,
-        },
-      },
-    },
-    emitters: {
-      direction: "bottom-right",
-      rate: {
-        delay: 3,
-        quantity: 1,
-      },
-      size: {
-        width: 0,
-        height: 0,
-      },
-      position: {
-        x: 0,
-        y: 0,
-      },
-    },
-    detectRetina: true,
-  };
 
   return (
-    <div 
-      className="fixed inset-0 pointer-events-none opacity-0 dark:opacity-100 transition-opacity duration-2000" 
-      style={{ 
-        zIndex: 1,
-        width: '100vw',
-        height: '100vh',
-      }}
-    >
-      {/* Stars */}
-      <div style={{ position: 'absolute', width: '100%', height: '100%', zIndex: 1 }}>
-        <Particles 
-          id="tsparticles-stars" 
-          init={particlesInit}
-          loaded={particlesLoaded}
-          options={options}
-        />
-      </div>
+    <div className="fixed inset-0 pointer-events-none transition-opacity duration-[2000ms] opacity-0 dark:opacity-100 z-[1]">
 
-      {/* Shooting Stars */}
-      <div style={{ position: 'absolute', width: '100%', height: '100%', zIndex: 2 }}>
-        <Particles 
-          id="tsparticles-shooting" 
-          init={particlesInit}
-          loaded={particlesLoaded}
-          options={shootingStarOptions}
-        />
-      </div>
+      {/* Moon */}
+      <div className="moon-container absolute top-[15%] left-[10%] z-10">
+        <div className="relative w-[120px] h-[120px] rounded-full bg-gradient-to-br from-[#f0f0f0] to-[#e8e8e8] animate-moonGlow">
 
-      {/* Moon with Craters */}
-      <div 
-        className="moon-container absolute top-[15%] left-[10%]" 
-        style={{ zIndex: 3 }}
-      >
-        <div className="relative w-[120px] h-[120px] bg-gradient-to-br from-[#f0f0f0] to-[#e8e8e8] rounded-full moon-glow">
-          <div className="absolute bg-[#c8c8c8] opacity-[0.4] rounded-full shadow-inner left-[22px] top-[30px] w-[22px] h-[22px]" />
-          <div className="absolute bg-[#c8c8c8] opacity-[0.4] rounded-full shadow-inner left-[60px] top-[65px] w-[30px] h-[30px]" />
-          <div className="absolute bg-[#c8c8c8] opacity-[0.4] rounded-full shadow-inner left-[30px] top-[80px] w-[18px] h-[18px]" />
+          <div className="absolute left-[22px] top-[30px] w-[22px] h-[22px] rounded-full bg-[#c8c8c8] opacity-40 shadow-inner" />
+          <div className="absolute left-[60px] top-[65px] w-[30px] h-[30px] rounded-full bg-[#c8c8c8] opacity-40 shadow-inner" />
+          <div className="absolute left-[30px] top-[80px] w-[18px] h-[18px] rounded-full bg-[#c8c8c8] opacity-40 shadow-inner" />
+
         </div>
       </div>
 
-      {/* Fallback stars if particles don't load */}
-      <div className="fallback-stars" style={{ position: 'absolute', width: '100%', height: '100%', zIndex: 0 }}>
-        {Array.from({ length: 50 }).map((_, i) => (
-          <div
-            key={i}
-            className="star"
-            style={{
-              position: 'absolute',
-              width: '2px',
-              height: '2px',
-              backgroundColor: 'white',
-              borderRadius: '50%',
-              left: `${Math.random() * 100}%`,
-              top: `${Math.random() * 100}%`,
-              opacity: Math.random() * 0.5 + 0.3,
-              animation: `twinkle ${Math.random() * 3 + 2}s infinite`,
-            }}
-          />
-        ))}
-      </div>
+      {/* Starfield */}
+      <div className="w-[1px] h-[1px] bg-transparent" style={{ boxShadow: starBoxShadow }} />
+
+      {/* Meteors */}
+      {meteorData.map((m, i) => (
+        <div
+          key={i}
+          className="meteor"
+          style={{
+            top: m.top,
+            left: m.left,
+            animationDuration: m.duration,
+            animationDelay: m.delay,
+          }}
+        />
+      ))}
 
       <style>{`
         .moon-container {
@@ -207,10 +62,6 @@ const DarkModeBackground: React.FC = () => {
         }
         .dark .moon-container {
           transform: translate(0, 0) scale(1);
-        }
-
-        .moon-glow {
-          animation: moonGlow 4s ease-in-out infinite;
         }
 
         @keyframes moonGlow {
@@ -224,33 +75,45 @@ const DarkModeBackground: React.FC = () => {
           }
         }
 
-        @keyframes twinkle {
-          0%, 100% {
-            opacity: 0.3;
-          }
-          50% {
+        .animate-moonGlow {
+          animation: moonGlow 4s ease-in-out infinite;
+        }
+
+        .meteor {
+          position: absolute;
+          width: 300px;
+          height: 1px;
+          transform: rotate(-45deg);
+          background-image: linear-gradient(to right, #fff, rgba(255,255,255,0));
+          animation-name: meteor;
+          animation-timing-function: linear;
+          animation-iteration-count: infinite;
+        }
+
+        .meteor:before {
+          content: "";
+          position: absolute;
+          width: 4px;
+          height: 5px;
+          border-radius: 50%;
+          margin-top: -2px;
+          background: rgba(255,255,255,.7);
+          box-shadow: 0 0 15px 3px #fff;
+        }
+
+        @keyframes meteor {
+          0% {
             opacity: 1;
+            margin-top: -300px;
+            margin-right: -300px;
           }
-        }
-
-        #tsparticles-stars canvas,
-        #tsparticles-shooting canvas {
-          display: block !important;
-          position: absolute !important;
-          top: 0 !important;
-          left: 0 !important;
-          width: 100% !important;
-          height: 100% !important;
-        }
-
-        /* Make sure particles container is visible */
-        #tsparticles-stars,
-        #tsparticles-shooting {
-          position: absolute !important;
-          top: 0 !important;
-          left: 0 !important;
-          width: 100% !important;
-          height: 100% !important;
+          12% { opacity: 0; }
+          15% {
+            margin-top: 300px;
+            margin-left: -600px;
+            opacity: 0;
+          }
+          100% { opacity: 0; }
         }
       `}</style>
     </div>

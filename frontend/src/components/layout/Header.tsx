@@ -20,6 +20,14 @@ const Header: React.FC = () => {
     };
   }, []);
 
+  useEffect(() => {
+    if (isDarkMode) {
+      document.body.classList.add("dark");
+    } else {
+      document.body.classList.remove("dark");
+    }
+  }, [isDarkMode]);
+
   const handleHomeClick = () => {
     if (location.pathname === '/') {
       const homeSection = document.getElementById('home');
@@ -50,7 +58,7 @@ const Header: React.FC = () => {
             Weather
           </Link>
           
-          {/* GitHub Button with Hover Effect */}
+          {/* GitHub Button */}
           <a 
             href="https://github.com/Ghosts6" 
             target="_blank" 
@@ -63,7 +71,7 @@ const Header: React.FC = () => {
             <span className="icon-bg"></span>
           </a>
           
-          {/* Theme Toggle Button with Hover Effect */}
+          {/* Theme Toggle Button */}
           <button 
             onClick={toggleDarkMode} 
             className="icon-btn"
@@ -140,12 +148,12 @@ const Header: React.FC = () => {
           display: flex;
           align-items: center;
           justify-content: center;
-          background-color: transparent;
+          background-color: var(--icon-bg);
           backdrop-filter: blur(0px);
           letter-spacing: 0.8px;
           border-radius: 10px;
           transition: all 0.3s;
-          border: 1px solid rgba(156, 156, 156, 0.466);
+          border: 1px solid var(--icon-border);
           position: relative;
           z-index: 1;
         }
@@ -170,7 +178,6 @@ const Header: React.FC = () => {
         }
 
         .icon-btn:hover .icon-container {
-          background-color: rgba(156, 156, 156, 0.466);
           backdrop-filter: blur(4px);
         }
 
@@ -180,6 +187,23 @@ const Header: React.FC = () => {
 
         .icon-btn:active .icon-container {
           transform: scale(0.95);
+        }
+
+        :root {
+          --icon-border: rgba(100, 100, 100, 0.5); 
+          --icon-bg: rgba(250, 250, 250, 0.4);    
+          --icon-color: #111;                     
+        }
+
+        body.dark {
+          --icon-border: rgba(200, 200, 200, 0.4); 
+          --icon-bg: rgba(30, 30, 30, 0.4);        
+          --icon-color: #fff;                      
+        }
+
+        .icon-container i {
+          color: var(--icon-color);
+          transition: color 0.3s;
         }
       `}</style>
     </header>

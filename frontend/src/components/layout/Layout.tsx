@@ -11,7 +11,6 @@ const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
       <div className="w-full h-full">
         <Header />
         <main className="w-full h-full">
-          <ParticlesBackground />
           {children}
         </main>
         <Footer />

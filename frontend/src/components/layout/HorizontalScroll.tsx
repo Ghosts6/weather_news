@@ -28,7 +28,6 @@ const HorizontalScroll: React.FC<HorizontalScrollProps> = ({
       const timeDelta = now - lastScrollTime.current;
       lastScrollTime.current = now;
 
-      // Check if we're scrolling horizontally (trackpad two-finger swipe left/right)
       if (Math.abs(e.deltaX) > Math.abs(e.deltaY)) {
         e.preventDefault();
         container.scrollLeft += e.deltaX * 2;
@@ -39,27 +38,22 @@ const HorizontalScroll: React.FC<HorizontalScrollProps> = ({
       // Handle vertical scrolling for section navigation
       if (Math.abs(e.deltaY) > 5) {
         e.preventDefault();
-        
-        // Accumulate vertical scroll delta
+
         accumulatedDeltaY.current += e.deltaY;
 
-        // Clear previous timeout
         if (scrollTimeoutRef.current) {
           clearTimeout(scrollTimeoutRef.current);
         }
 
-        // Set new timeout to detect end of scroll gesture
         scrollTimeoutRef.current = setTimeout(() => {
-          const threshold = 50; // Minimum accumulated scroll to trigger section change (reduced for smoother navigation)
+          const threshold = 50;
           
           if (Math.abs(accumulatedDeltaY.current) >= threshold) {
             const numSections = React.Children.count(children);
             
             if (accumulatedDeltaY.current > 0 && currentSection < numSections - 1) {
-              // Scroll down - next section
               onSectionChange(currentSection + 1);
             } else if (accumulatedDeltaY.current < 0 && currentSection > 0) {
-              // Scroll up - previous section
               onSectionChange(currentSection - 1);
             }
           }

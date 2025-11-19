@@ -10,4 +10,5 @@ urlpatterns = [
     path('get_user_location/', views.get_user_location_view, name='get_user_location'),
     path('get_news/', views.get_news_view, name='get_news'),
     path('search_suggestions/', views.search_suggestions, name='search_suggestions'),
+    path('map_tile/<str:layer>/<int:z>/<int:x>/<int:y>/', views.map_tile_proxy, name='map_tile_proxy'),
 ]

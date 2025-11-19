@@ -6,6 +6,8 @@ import Header from '../components/layout/Header';
 import Footer from '../components/layout/Footer';
 import { ThemeProvider } from '../context/ThemeContext';
 import ParticlesBackground from '../components/layout/ParticlesBackground';
+import MostViewed from '../components/layout/MostViewed';
+import WeatherMap from '../components/layout/WeatherMap';
 
 interface News {
   title: string;
@@ -13,13 +15,9 @@ interface News {
   url: string;
 }
 
-interface Weather {
-  city_name: string;
-  description: string;
-  temperature: string;
-}
+import { Weather } from '../interfaces/Weather';
 
-const SECTIONS = ['Home', 'Most Viewed', 'Current Location', 'Tornado News', 'Storm News', 'Flood News'];
+const SECTIONS = ['Home', 'Most Viewed', 'Weather Map', 'Tornado News', 'Storm News', 'Flood News'];
 
 const HomePage: React.FC = () => {
   const navigate = useNavigate();
@@ -27,7 +25,6 @@ const HomePage: React.FC = () => {
   const [stormNews, setStormNews] = useState<News[]>([]);
   const [floodNews, setFloodNews] = useState<News[]>([]);
   const [userLocationWeather, setUserLocationWeather] = useState<Weather | null>(null);
-  const [parisWeather, setParisWeather] = useState<Weather | null>(null);
   const [currentSection, setCurrentSection] = useState(0);
   const sectionRefs = useRef<(HTMLElement | null)[]>([]);
   const [isProgrammaticScroll, setIsProgrammaticScroll] = useState(false);
@@ -48,10 +45,6 @@ const HomePage: React.FC = () => {
     fetch('/api/get_user_location/')
       .then((response) => response.json())
       .then((data) => setUserLocationWeather(data));
-
-    fetch('/api/get_weather_data/?city_name=Paris')
-      .then((response) => response.json())
-      .then((data) => setParisWeather(data));
   }, []);
 
   useEffect(() => {
@@ -149,9 +142,9 @@ const HomePage: React.FC = () => {
                         {userLocationWeather?.city_name || 'Loading...'}
                       </h1>
                       <p className="text-4xl font-light text-white">
-                        {userLocationWeather?.temperature ? `${userLocationWeather.temperature}°` : '--°'}
+                        {userLocationWeather?.temperature ? `${Math.round(userLocationWeather.temperature)}°` : '--°'}
                         <span className="text-2xl ml-2">
-                          | Feels Like: {userLocationWeather?.temperature ? `${userLocationWeather.temperature}°` : '--°'}
+                          | Feels Like: {userLocationWeather?.temperature ? `${Math.round(userLocationWeather.temperature)}°` : '--°'}
                         </span>
                       </p>
                     </div>
@@ -230,61 +223,11 @@ const HomePage: React.FC = () => {
                 )}
 
                 {index === 1 && (
-                  <div className="w-full h-full flex items-center justify-center px-4">
-                    <div className="w-full max-w-2xl">
-                      <h2 className="text-5xl font-light text-white text-center mb-12">Most Viewed Location</h2>
-                      <div className="relative bg-white/20 backdrop-blur-lg border border-white/30 rounded-3xl p-12 shadow-xl overflow-hidden min-h-[400px] flex items-center justify-center">
-                        <div className="absolute inset-0 opacity-20">
-                          <img src="/img/mostviewd.png" alt="Most Viewed" className="w-full h-full object-cover" />
-                        </div>
-                        <div className="relative z-10 text-center">
-                          <div className="mb-6">
-                            <svg className="w-20 h-20 text-white/80 mx-auto" fill="currentColor" viewBox="0 0 24 24">
-                              <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/>
-                            </svg>
-                          </div>
-                          <p className="text-white text-5xl font-light mb-4">
-                            {parisWeather?.city_name || 'Loading...'}
-                          </p>
-                          <p className="text-white text-7xl font-light mb-4">
-                            {parisWeather?.temperature ? `${parisWeather.temperature}°C` : '--°'}
-                          </p>
-                          <p className="text-white/80 text-2xl">
-                            {parisWeather?.description || 'Loading...'}
-                          </p>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
+                  <MostViewed />
                 )}
 
                 {index === 2 && (
-                  <div className="w-full h-full flex items-center justify-center px-4">
-                    <div className="w-full max-w-2xl">
-                      <h2 className="text-5xl font-light text-white text-center mb-12">Current Location</h2>
-                      <div className="relative bg-white/20 backdrop-blur-lg border border-white/30 rounded-3xl p-12 shadow-xl overflow-hidden min-h-[400px] flex items-center justify-center">
-                        <div className="absolute inset-0 opacity-20">
-                          <img src="/img/local.webp" alt="Local" className="w-full h-full object-cover" />
-                        </div>
-                        <div className="relative z-10 text-center">
-                          <div className="mb-6">
-                            <svg className="w-20 h-20 text-white/80 mx-auto" fill="currentColor" viewBox="0 0 24 24">
-                              <path d="M12 8c-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4-1.79-4-4-4zm8.94 3c-.46-4.17-3.77-7.48-7.94-7.94V1h-2v2.06C6.83 3.52 3.52 6.83 3.06 11H1v2h2.06c.46 4.17 3.77 7.48 7.94 7.94V23h2v-2.06c4.17-.46 7.48-3.77 7.94-7.94H23v-2h-2.06zM12 19c-3.87 0-7-3.13-7-7s3.13-7 7-7 7 3.13 7 7-3.13 7-7 7z"/>
-                            </svg>
-                          </div>
-                          <p className="text-white text-5xl font-light mb-4">
-                            {userLocationWeather?.city_name || 'Loading...'}
-                          </p>
-                          <p className="text-white text-7xl font-light mb-4">
-                            {userLocationWeather?.temperature ? `${userLocationWeather.temperature}°C` : '--°'}
-                          </p>
-                          <p className="text-white/80 text-2xl">
-                            {userLocationWeather?.description || 'Loading...'}
-                          </p>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
+                  <WeatherMap isActive={currentSection === 2} />
                 )}
 
                 {index === 3 && (
