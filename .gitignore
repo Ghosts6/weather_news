@@ -14,6 +14,7 @@ log.txt
 staticfiles/
 cache/*.djcache
 *.djcache
+cache/
 
 # Frontend
 node_modules/

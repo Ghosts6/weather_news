@@ -15,27 +15,25 @@ def api_client():
 @pytest.mark.django_db
 def test_search_suggestions_valid(api_client):
     url = reverse('search_suggestions')  
-    with patch('builtins.open', mock_open(read_data=json.dumps([
+    with patch('weather.views.get_city_list', return_value=[
         {'name': 'Paris'},
         {'name': 'Parma'},
         {'name': 'Paradise'}
-    ]))):
+    ]):
         response = api_client.get(url, {'city_name': 'par'})
         data = response.json()
 
         assert data['success'] is True
-        assert 'Paris' in data['suggestions']
-        assert 'Parma' in data['suggestions']
-        assert 'Paradise' in data['suggestions']
+        assert data['suggestions'] == ['Paris', 'Parma', 'Paradise']
 
 @pytest.mark.django_db
 def test_search_suggestions_no_match(api_client):
     url = reverse('search_suggestions')
-    with patch('builtins.open', mock_open(read_data=json.dumps([
+    with patch('weather.views.get_city_list', return_value=[
         {'name': 'Paris'},
         {'name': 'Parma'},
         {'name': 'Paradise'}
-    ]))):
+    ]):
         response = api_client.get(url, {'city_name': 'xyz'})
         data = response.json()
 
@@ -46,21 +44,29 @@ def test_search_suggestions_no_match(api_client):
 def test_get_weather_data_valid(api_client):
     url = reverse('get_weather_data')
 
+    # More complete mock data to match the view's expectations
     weather_data_mock = {
         'cod': 200,
-        'main': {'temp': 295.15, 'humidity': 80},
+        'main': {'temp': 295.15, 'humidity': 80, 'pressure': 1012},
         'weather': [{'description': 'Clear sky', 'icon': '01d'}],
         'wind': {'speed': 5},
+        'sys': {'sunrise': 1661834187, 'sunset': 1661882248},
         'timezone': 3600
     }
     
     weatherapi_data_mock = {
         'forecast': {
             'forecastday': [{
+                'date': '2025-11-21',
+                'day': {
+                    'maxtemp_c': 20.0,
+                    'mintemp_c': 10.0,
+                    'condition': {'text': 'Sunny', 'icon': '113.png'}
+                },
                 'hour': [{
-                    'time': '2024-11-29 00:00',
+                    'time': '2025-11-21 00:00',
                     'temp_c': 18.0,
-                    'condition': {'text': 'Clear', 'icon': '01d'}
+                    'condition': {'text': 'Clear', 'icon': '113.png'}
                 }]
             }]
         }
@@ -82,6 +88,8 @@ def test_get_weather_data_valid(api_client):
         assert len(data['hourly_forecast']) == 1
         assert data['hourly_forecast'][0]['time'] == '00:00'
         assert data['hourly_forecast'][0]['temperature'] == 18.0
+        assert len(data['daily_forecast']) == 1
+        assert data['daily_forecast'][0]['date'] == '2025-11-21'
 
 @pytest.mark.django_db
 def test_get_weather_data_city_not_found(api_client):

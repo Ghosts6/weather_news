@@ -11,6 +11,8 @@ import pytz
 import requests
 import time
 import os
+import gzip
+from django.conf import settings
 
 import logging
 logger = logging.getLogger(__name__)
@@ -96,7 +98,7 @@ def get_weather_data(request):
 
     if city_name:
         weather_url = f'http://api.openweathermap.org/data/2.5/weather?q={city_name}&appid={API_KEY}'
-        weatherapi_url = f'https://api.weatherapi.com/v1/forecast.json?key={WEATHER_API_KEY_2}&q={city_name}&hours=12'
+        weatherapi_url = f'https://api.weatherapi.com/v1/forecast.json?key={WEATHER_API_KEY_2}&q={city_name}&days=3'
 
         def fetch_with_retry(url, retries=MAX_RETRIES):
             for attempt in range(retries):
@@ -122,17 +124,28 @@ def get_weather_data(request):
             icon = weather_data.get('weather', [{}])[0].get('icon', '')
             wind_speed = weather_data.get('wind', {}).get('speed', 0)
             humidity = weather_data.get('main', {}).get('humidity', 0)
+            pressure = weather_data.get('main', {}).get('pressure', 0)
 
-            city_timezone = weather_data.get('timezone', 0)
+            city_timezone = weather_data.get('timezone')
             utc_time = datetime.utcnow() + timedelta(seconds=city_timezone)
             city_time = utc_time.strftime('%Y-%m-%d %H:%M:%S')
+            
+            sunrise_ts = weather_data.get('sys', {}).get('sunrise')
+            sunset_ts = weather_data.get('sys', {}).get('sunset')
+
+            sunrise = 'N/A'
+            sunset = 'N/A'
+            if sunrise_ts and city_timezone is not None:
+                sunrise = (datetime.utcfromtimestamp(sunrise_ts) + timedelta(seconds=city_timezone)).strftime('%H:%M')
+            if sunset_ts and city_timezone is not None:
+                sunset = (datetime.utcfromtimestamp(sunset_ts) + timedelta(seconds=city_timezone)).strftime('%H:%M')
 
             weatherapi_response = fetch_with_retry(weatherapi_url)
             weatherapi_data = weatherapi_response.json()
 
             hourly_forecast = []
-            if 'forecast' in weatherapi_data and 'forecastday' in weatherapi_data['forecast']:
-                for hour in weatherapi_data['forecast']['forecastday'][0]['hour'][:12]:
+            if 'forecast' in weatherapi_data and 'forecastday' in weatherapi_data['forecast'] and weatherapi_data['forecast']['forecastday']:
+                for hour in weatherapi_data['forecast']['forecastday'][0]['hour']:
                     hour_data = {
                         'time': hour['time'].split(' ')[1],
                         'temperature': hour['temp_c'],
@@ -140,6 +153,18 @@ def get_weather_data(request):
                         'icon': hour['condition']['icon'],
                     }
                     hourly_forecast.append(hour_data)
+
+            daily_forecast = []
+            if 'forecast' in weatherapi_data and 'forecastday' in weatherapi_data['forecast']:
+                for day in weatherapi_data['forecast']['forecastday']:
+                    day_data = {
+                        'date': day['date'],
+                        'maxtemp': day['day']['maxtemp_c'],
+                        'mintemp': day['day']['mintemp_c'],
+                        'condition': day['day']['condition']['text'],
+                        'icon': day['day']['condition']['icon'],
+                    }
+                    daily_forecast.append(day_data)
 
             response_data = {
                 'city_name': city_name,
@@ -151,6 +176,10 @@ def get_weather_data(request):
                 'humidity': humidity,
                 'timezone': city_timezone,
                 'hourly_forecast': hourly_forecast,
+                'daily_forecast': daily_forecast,
+                'pressure': pressure,
+                'sunrise': sunrise,
+                'sunset': sunset,
             }
             return JsonResponse(response_data)
 
@@ -224,6 +253,9 @@ def get_news_view(request):
     query = request.GET.get('query', '')
     if not query:
         return JsonResponse({'error_message': 'Query is required'}, status=400)
+
+    if query.lower() in ['tornado', 'storm', 'flood']:
+        query = f'{query} AND (weather OR disaster OR warning OR damage OR alert)'
     
     news = get_news(query)
     return JsonResponse({'news': news})
@@ -381,27 +413,78 @@ def map_tile_proxy_optimized(request, layer, z, x, y):
         logger.error(f"Error fetching tile {layer}/{z}/{x}/{y}: {str(e)}")
         return HttpResponse("Error fetching tile", status=500)
 
+_city_list_cache = None
+
+CITY_LIST_CACHE_DURATION = timedelta(days=7) # Refresh city list every 7 days
+
+def get_city_list():
+    """
+    Loads the city list into an in-memory cache to avoid disk I/O on every request.
+    It uses a file-based cache as a backing store, which is populated from a remote URL if it doesn't exist or is too old.
+    """
+    global _city_list_cache
+    if _city_list_cache is not None:
+        return _city_list_cache
+
+    cache_dir = settings.BASE_DIR / 'cache'
+    json_path = cache_dir / 'city.list.json'
+    
+    cities = None
+    file_needs_refresh = True
+
+    if os.path.exists(json_path):
+        try:
+            mod_time = datetime.fromtimestamp(os.path.getmtime(json_path))
+            if datetime.now() - mod_time < CITY_LIST_CACHE_DURATION:
+                with open(json_path, 'r', encoding='utf-8') as file:
+                    cities = json.load(file)
+                file_needs_refresh = False
+            else:
+                logger.info(f"City list cache file is older than {CITY_LIST_CACHE_DURATION.days} days. Refreshing...")
+        except (json.JSONDecodeError, UnicodeDecodeError):
+            logger.warning("City list cache file is corrupt. Refreshing...")
+            cities = None  # File is corrupt, will be overwritten
+
+    if file_needs_refresh or cities is None:
+        url = "https://bulk.openweathermap.org/sample/city.list.json.gz"
+        try:
+            response = requests.get(url)
+            response.raise_for_status()
+            
+            decompressed_content = gzip.decompress(response.content)
+            cities = json.loads(decompressed_content.decode('utf-8'))
+
+            os.makedirs(cache_dir, exist_ok=True)
+            with open(json_path, 'w', encoding='utf-8') as f:
+                json.dump(cities, f)
+            logger.info("City list cache file refreshed successfully.")
+        except (requests.RequestException, json.JSONDecodeError, gzip.BadGzipFile) as e:
+            logger.error(f"Failed to fetch or process new city list: {e}")
+            if os.path.exists(json_path) and cities is None: 
+                try:
+                    with open(json_path, 'r', encoding='utf-8') as file:
+                        cities = json.load(file)
+                        logger.warning("Using old/corrupted city list due to failed refresh.")
+                except Exception:
+                    cities = [] # Fallback to empty list
+            else:
+                cities = [] # Fallback to empty list
+            
+    _city_list_cache = cities
+    return _city_list_cache
 def search_suggestions(request):
     city_name = request.GET.get('city_name', '').lower()
 
+    if not city_name:
+        return JsonResponse({'success': True, 'suggestions': []})
+
     try:
-        json_path = 'backend/climate/fixture/city.list.json.txt'
-
-        try:
-            with open(json_path, 'r', encoding='utf-8') as file:
-                cities = json.load(file)
-        except FileNotFoundError:
-            url = "https://bulk.openweathermap.org/sample/city.list.json.gz"
-            response = requests.get(url)
-            if response.status_code == 200:
-                cities = json.loads(response.text)
-            else:
-                return JsonResponse({'success': False, 'error': f"Failed to fetch data from URL: {url}"})
-
+        cities = get_city_list()
+        
+        # Filter cities and limit the number of suggestions
         suggestions = [city['name'] for city in cities if city_name in city['name'].lower()]
-        return JsonResponse({'success': True, 'suggestions': suggestions})
+        return JsonResponse({'success': True, 'suggestions': suggestions[:10]}) # Limit to 10
 
-    except json.JSONDecodeError:
-        return JsonResponse({'success': False, 'error': 'Error parsing JSON'})
     except Exception as e:
+        logger.error(f"Error in search_suggestions: {e}")
         return JsonResponse({'success': False, 'error': str(e)})
