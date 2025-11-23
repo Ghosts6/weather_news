@@ -23,6 +23,24 @@ const HorizontalScroll: React.FC<HorizontalScrollProps> = ({
     const handleWheel = (e: WheelEvent) => {
       if (!scrollContainerRef.current) return;
 
+      const isMobile = window.innerWidth < 768;
+      if (isMobile) {
+        let targetElement = e.target as HTMLElement;
+        while (targetElement && targetElement !== scrollContainerRef.current) {
+          const style = window.getComputedStyle(targetElement);
+          const isHorizontallyScrollable = style.overflowX === 'auto' || style.overflowX === 'scroll';
+          const isVerticallyScrollable = style.overflowY === 'auto' || style.overflowY === 'scroll';
+          
+          const hasHorizontalScrollbar = isHorizontallyScrollable && targetElement.scrollWidth > targetElement.clientWidth;
+          const hasVerticalScrollbar = isVerticallyScrollable && targetElement.scrollHeight > targetElement.clientHeight;
+
+          if (hasHorizontalScrollbar || hasVerticalScrollbar) {
+            return;
+          }
+          targetElement = targetElement.parentElement as HTMLElement;
+        }
+      }
+
       const container = scrollContainerRef.current;
       const now = Date.now();
       const timeDelta = now - lastScrollTime.current;

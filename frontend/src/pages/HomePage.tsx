@@ -112,6 +112,22 @@ const HomePage: React.FC = () => {
 
   return (
     <ThemeProvider>
+      <style>{`
+        .scrollbar-thin::-webkit-scrollbar {
+          width: 6px;
+          height: 6px;
+        }
+        .scrollbar-thin::-webkit-scrollbar-track {
+          background: transparent;
+        }
+        .scrollbar-thin::-webkit-scrollbar-thumb {
+          background: rgba(255, 255, 255, 0.2);
+          border-radius: 3px;
+        }
+        .scrollbar-thin::-webkit-scrollbar-thumb:hover {
+          background: rgba(255, 255, 255, 0.3);
+        }
+      `}</style>
       <div className="fullscreen-container">
         <Header />
         <main>
@@ -231,7 +247,7 @@ const HomePage: React.FC = () => {
                 )}
 
                 {index === 3 && (
-                  <div className="w-full max-w-6xl mx-auto px-4 py-8">
+                  <div className="w-full max-w-6xl mx-auto px-4 py-8 overflow-x-auto scrollbar-thin pb-4">
                     <div className="text-center mb-8">
                       <div className="inline-block relative">
                         <h2 className="text-5xl font-light text-white mb-2">Tornado News</h2>
@@ -248,8 +264,8 @@ const HomePage: React.FC = () => {
                             <img src="/img/tornado.jpg" alt="Tornado" className="w-full h-full object-cover" />
                           </div>
                           <div className="relative z-10">
-                            <h3 className="text-xl font-medium text-white mb-3">{news.title}</h3>
-                            <p className="text-white/80 text-sm mb-4 line-clamp-3">{news.description}</p>
+                            <h3 className="text-xl font-medium text-white mb-3 break-words">{news.title}</h3>
+                            <p className="text-white/80 text-sm mb-4 line-clamp-3 break-words">{news.description}</p>
                             <a 
                               href={news.url} 
                               target="_blank" 
@@ -269,7 +285,7 @@ const HomePage: React.FC = () => {
                 )}
 
                 {index === 4 && (
-                  <div className="w-full max-w-6xl mx-auto px-4 py-8">
+                  <div className="w-full max-w-6xl mx-auto px-4 py-8 overflow-x-auto scrollbar-thin pb-4">
                     <div className="text-center mb-8">
                       <div className="inline-block relative">
                         <h2 className="text-5xl font-light text-white mb-2">Storm News</h2>
@@ -286,8 +302,8 @@ const HomePage: React.FC = () => {
                             <img src="/img/storm.jpg" alt="Storm" className="w-full h-full object-cover" />
                           </div>
                           <div className="relative z-10">
-                            <h3 className="text-xl font-medium text-white mb-3">{news.title}</h3>
-                            <p className="text-white/80 text-sm mb-4 line-clamp-3">{news.description}</p>
+                            <h3 className="text-xl font-medium text-white mb-3 break-words">{news.title}</h3>
+                            <p className="text-white/80 text-sm mb-4 line-clamp-3 break-words">{news.description}</p>
                             <a 
                               href={news.url} 
                               target="_blank" 
@@ -307,7 +323,7 @@ const HomePage: React.FC = () => {
                 )}
 
                 {index === 5 && (
-                  <div className="w-full max-w-6xl mx-auto px-4 py-8">
+                  <div className="w-full max-w-6xl mx-auto px-4 py-8 overflow-x-auto scrollbar-thin pb-4">
                     <div className="text-center mb-8">
                       <div className="inline-block relative">
                         <h2 className="text-5xl font-light text-white mb-2">Flood News</h2>
@@ -324,8 +340,8 @@ const HomePage: React.FC = () => {
                             <img src="/img/flood.jpg" alt="Flood" className="w-full h-full object-cover" />
                           </div>
                           <div className="relative z-10">
-                            <h3 className="text-xl font-medium text-white mb-3">{news.title}</h3>
-                            <p className="text-white/80 text-sm mb-4 line-clamp-3">{news.description}</p>
+                            <h3 className="text-xl font-medium text-white mb-3 break-words">{news.title}</h3>
+                            <p className="text-white/80 text-sm mb-4 line-clamp-3 break-words">{news.description}</p>
                             <a 
                               href={news.url} 
                               target="_blank" 

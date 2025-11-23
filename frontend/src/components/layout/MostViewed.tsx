@@ -53,7 +53,7 @@ const MostViewed: React.FC = () => {
           <div className="h-1 bg-gradient-to-r from-transparent via-blue-500 to-transparent rounded-full"></div>
         </div>
       </div>
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start flex-grow">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start flex-grow overflow-y-auto scrollbar-thin lg:overflow-y-visible">
         {/* City List */}
         <div className="lg:col-span-1 bg-white/10 backdrop-blur-lg border border-white/20 rounded-3xl p-6 flex flex-col h-full">
           <h3 className="text-white text-xl font-medium mb-4">Locations</h3>
@@ -88,7 +88,7 @@ const MostViewed: React.FC = () => {
                   <img src={`/img/weather-search.jpg`} alt="background" className="w-full h-full object-cover"/>
                 </div>
                 <div className="relative z-10">
-                  <h3 className="text-4xl md:text-5xl font-bold text-white mb-2">{selectedCity.city_name}</h3>
+                  <h3 className="text-4xl md:text-5xl font-bold text-white mb-2 break-words">{selectedCity.city_name}</h3>
                   <p className="text-7xl md:text-8xl font-light text-white mb-3">{Math.round(selectedCity.temperature)}°C</p>
                   <div className="flex items-center justify-center gap-3">
                     <WeatherIcon iconCode={selectedCity.icon} className="w-12 h-12 text-white" />
