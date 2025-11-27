@@ -168,6 +168,9 @@ SESSION_CACHE_ALIAS = 'default'
 # Test config
 TEST_RUNNER = 'test_runner.PytestTestRunner'
 
+LOG_DIR = os.path.join(BASE_DIR, 'climate', 'Logs')
+os.makedirs(LOG_DIR, exist_ok=True)
+
 # Log
 LOG_LEVEL = os.getenv('DJANGO_LOG_LEVEL', 'INFO').upper()
 
@@ -192,7 +195,7 @@ LOGGING = {
         'file': {
             'level': LOG_LEVEL,
             'class': 'weather.custom_logging.GzipTimedRotatingFileHandler',
-            'filename': os.path.join(BASE_DIR, 'climate/Logs/log.txt'),
+            'filename': os.path.join(LOG_DIR, 'log.txt'),
             'when': 'D',
             'interval': 1,
             'backupCount': 5,
