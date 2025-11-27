@@ -15,6 +15,7 @@ staticfiles/
 cache/*.djcache
 *.djcache
 cache/
+Logs/*
 
 # Frontend
 node_modules/
@@ -30,6 +31,8 @@ output.css
 
 # Testing
 coverage/
+.pytest_cache/
+.coverage
 
 # Production
 .DS_Store

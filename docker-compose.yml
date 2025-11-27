@@ -1,3 +1,5 @@
+version: '3.8'
+
 services:
   backend:
     build:
@@ -10,6 +12,8 @@ services:
       - "8000:8000"
     env_file:
       - ./docker.env
+    depends_on:
+      - redis
 
   frontend:
     build:
@@ -24,3 +28,13 @@ services:
     stdin_open: true
     tty: true
 
+  redis:
+    image: "redis:alpine"
+    command: redis-server --maxmemory 256mb --maxmemory-policy allkeys-lru
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+
+volumes:
+  redis_data:

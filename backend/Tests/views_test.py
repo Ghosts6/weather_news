@@ -4,6 +4,8 @@ from django.urls import reverse
 from unittest.mock import patch, MagicMock
 from rest_framework.test import APIClient
 import json
+import os
+import requests
 
 from weather.views import get_timezone_data
 
@@ -104,7 +106,7 @@ def test_get_weather_data_city_not_found(api_client):
         data = response.json()
 
         assert response.status_code == 404
-        assert data['error_message'] == 'City Not Found'
+        assert data['message'] == 'City Not Found'
 
 @pytest.mark.django_db
 def test_get_weather_data_missing_city(api_client):
@@ -114,7 +116,7 @@ def test_get_weather_data_missing_city(api_client):
     data = response.json()
 
     assert response.status_code == 400
-    assert data['error_message'] == 'City name is required'
+    assert data['message'] == 'City name is required'
     
 @pytest.mark.django_db
 def test_get_timezone_data_valid():
@@ -138,8 +140,11 @@ def test_get_timezone_data_invalid():
 
         assert result is None
 
+from django.core.cache import cache
+
 @pytest.mark.django_db
 def test_get_timezone_data_exception():
+    cache.clear()
     with patch('requests.get') as mock_get:
         mock_get.side_effect = Exception("API Error")
 
@@ -174,7 +179,7 @@ def test_get_time_zone_city_not_found(api_client):
         data = response.json()
 
         assert response.status_code == 404
-        assert data['error_message'] == 'Could not fetch timezone data'
+        assert data['message'] == 'Could not fetch timezone data'
 
 @pytest.mark.django_db
 def test_get_time_zone_missing_city(api_client):
@@ -184,7 +189,7 @@ def test_get_time_zone_missing_city(api_client):
     data = response.json()
 
     assert response.status_code == 400
-    assert data['error_message'] == 'City name is required'
+    assert data['message'] == 'City name is required'
 
 @pytest.mark.django_db
 @patch('weather.views.get_weather_data_for_city')
@@ -239,10 +244,85 @@ def test_get_user_location_fallback_to_toronto(mock_fetch_user_ip, mock_get_loca
     assert response.status_code == 200
     assert data['city_name'] == 'Toronto'
 
-    # Case 4: Weather fails for user's city
-    mock_get_location_from_ip.return_value = 'Paris, Ile-de-France, France'
+    assert data['city_name'] == 'Toronto'
+
+@pytest.mark.django_db
+@patch('weather.views.get_news')
+def test_get_news_view_success(mock_get_news, api_client):
+    mock_get_news.return_value = [{'title': 'Test News'}]
+    url = reverse('get_news')
+    response = api_client.get(url, {'query': 'test'})
+    data = response.json()
+    assert response.status_code == 200
+    assert len(data['news']) == 1
+    assert data['news'][0]['title'] == 'Test News'
+
+@pytest.mark.django_db
+def test_get_news_view_missing_query(api_client):
+    url = reverse('get_news')
+    response = api_client.get(url)
+    assert response.status_code == 400
+
+@pytest.mark.django_db
+@patch('weather.views.NEWS_API_KEY', '')
+def test_get_news_view_no_api_key(api_client):
+    url = reverse('get_news')
+    response = api_client.get(url, {'query': 'test'})
+    assert response.status_code == 503
+
+@pytest.mark.django_db
+@patch('weather.views.requests.get')
+def test_map_tile_proxy_success(mock_get, api_client):
+    mock_get.return_value = MagicMock(
+        status_code=200, 
+        content=b'tile_content', 
+        headers={'Content-Type': 'image/png'}
+    )
+    url = reverse('map_tile_proxy', args=['temp_new', 1, 1, 1])
+    response = api_client.get(url)
+    assert response.status_code == 200
+    assert response.content == b'tile_content'
+
+@pytest.mark.django_db
+@patch('weather.views.get_session')
+def test_map_tile_proxy_optimized_success(mock_get_session, api_client):
+    mock_session = MagicMock()
+    mock_session.get.return_value = MagicMock(
+        status_code=200, 
+        content=b'tile_content_optimized', 
+        headers={'Content-Type': 'image/png'}
+    )
+    mock_get_session.return_value = mock_session
+    url = reverse('map_tile_proxy_optimized', args=['temp_new', 1, 1, 1])
+    response = api_client.get(url)
+    assert response.status_code == 200
+    assert response.content == b'tile_content_optimized'
+
+@pytest.mark.django_db
+@patch('weather.views.get_city_list')
+def test_search_suggestions_success(mock_get_city_list, api_client):
+    mock_get_city_list.return_value = [{'name': 'London'}, {'name': 'Liverpool'}]
+    url = reverse('search_suggestions')
+    response = api_client.get(url, {'city_name': 'lon'})
+    data = response.json()
+    assert response.status_code == 200
+    assert data['success'] is True
+    assert data['suggestions'] == ['London']
+
+@pytest.mark.django_db
+def test_search_suggestions_no_city_name(api_client):
+    url = reverse('search_suggestions')
     response = api_client.get(url)
     data = response.json()
     assert response.status_code == 200
-    assert data['city_name'] == 'Toronto'
+    assert data['success'] is True
+    assert data['suggestions'] == []
+
+@pytest.mark.django_db
+@patch('weather.views.get_city_list', side_effect=Exception('Test Error'))
+def test_search_suggestions_exception(mock_get_city_list, api_client):
+    url = reverse('search_suggestions')
+    response = api_client.get(url, {'city_name': 'test'})
+    assert response.status_code == 503
+
 

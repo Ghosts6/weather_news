@@ -11,4 +11,5 @@ urlpatterns = [
     path('get_news/', views.get_news_view, name='get_news'),
     path('search_suggestions/', views.search_suggestions, name='search_suggestions'),
     path('map_tile/<str:layer>/<int:z>/<int:x>/<int:y>/', views.map_tile_proxy, name='map_tile_proxy'),
+    path('map_tile_optimized/<str:layer>/<int:z>/<int:x>/<int:y>/', views.map_tile_proxy_optimized, name='map_tile_proxy_optimized'),
 ]

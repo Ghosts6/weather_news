@@ -1,14 +1,15 @@
 # Core Dependencies for the project
 django 
 djangorestframework 
+django-rest-knox
 django-redis
-django-auth-ldap  
 whitenoise       
 django-cors-headers
+dj-database-url
 
 # Environment and configuration
-python-dotenv      
-python-ldap        
+python-dotenv
+python-json-logger
 
 # Date and time handling
 pytz              
@@ -20,6 +21,7 @@ requests
 # Testing dependencies 
 pytest       
 pytest-django      
+pytest-cov
 requests-mock      
 mock     
 
