@@ -187,7 +187,7 @@ LOGGING = {
             'datefmt': '%Y-%m-%d %H:%M:%S'
         },
         'json': {
-            '()': 'pythonjsonlogger.json.JsonFormatter', # Corrected this
+            '()': 'pythonjsonlogger.json.JsonFormatter',
             'format': '%(asctime)s %(name)s %(levelname)s %(message)s %(lineno)s %(pathname)s'
         },
     },
