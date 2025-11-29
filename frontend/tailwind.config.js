@@ -29,6 +29,19 @@ module.exports = {
           '0%, 50%, 100%': { color: 'white' },
           '25%, 75%': { color: '#7fb3d5' },  
         },
+        'shake-center': {
+          '0%': { transform: 'rotate(0deg)' },
+          '10%': { transform: 'rotate(0deg)' },
+          '20%': { transform: 'rotate(-10deg)' },
+          '30%': { transform: 'rotate(10deg)' },
+          '40%': { transform: 'rotate(-10deg)' },
+          '50%': { transform: 'rotate(10deg)' },
+          '60%': { transform: 'rotate(-10deg)' },
+          '70%': { transform: 'rotate(10deg)' },
+          '80%': { transform: 'rotate(-8deg)' },
+          '90%': { transform: 'rotate(8deg)' },
+          '100%': { transform: 'rotate(0deg)' },
+        },
       },
       animation: {
         movingColor: 'movingColor 10s infinite',
@@ -36,6 +49,7 @@ module.exports = {
         shine: 'shine 12s infinite',
         leSnake: 'leSnake 1.5s ease-in-out infinite',
         lightningText: 'lightningText 3s infinite',
+        'shake-center': 'shake-center 1s linear 0s 1 normal none',
       },
       animationDelay: {
         '0': '0s',
@@ -89,9 +103,17 @@ module.exports = {
         '.delay-700': { 'animation-delay': '0.7s' },
         '.delay-800': { 'animation-delay': '0.8s' },
         '.delay-900': { 'animation-delay': '0.9s' },
-      });
+        '.rotate-x-180': {
+          transform: 'rotateX(180deg)',
+        },
+      }, ['responsive', 'hover', 'group-hover']);
      },
     require('tailwind-scrollbar')({ nocompatible: true }),
     require('tailwindcss-textshadow'),
+  ],
+  safelist: [
+    'via-red-500',
+    'via-blue-500',
+    'via-cyan-500',
   ],
 }

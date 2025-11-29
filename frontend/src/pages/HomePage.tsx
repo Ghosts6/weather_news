@@ -8,6 +8,7 @@ import { ThemeProvider } from '../context/ThemeContext';
 import ParticlesBackground from '../components/layout/ParticlesBackground';
 import MostViewed from '../components/layout/MostViewed';
 import WeatherMap from '../components/layout/WeatherMap';
+import { Weather } from '../interfaces/Weather';
 
 interface News {
   title: string;
@@ -15,36 +16,200 @@ interface News {
   url: string;
 }
 
-import { Weather } from '../interfaces/Weather';
-
 const SECTIONS = ['Home', 'Most Viewed', 'Weather Map', 'Tornado News', 'Storm News', 'Flood News'];
+
+// Loading Skeleton Component
+const NewsCardSkeleton: React.FC = () => (
+  <div className="relative bg-white/20 backdrop-blur-lg border border-white/30 rounded-3xl p-6 shadow-xl overflow-hidden animate-pulse">
+    <div className="relative z-10">
+      <div className="h-6 bg-white/30 rounded-lg mb-3 w-3/4"></div>
+      <div className="space-y-2 mb-4">
+        <div className="h-4 bg-white/20 rounded w-full"></div>
+        <div className="h-4 bg-white/20 rounded w-5/6"></div>
+        <div className="h-4 bg-white/20 rounded w-4/6"></div>
+      </div>
+      <div className="h-4 bg-white/30 rounded w-24"></div>
+    </div>
+  </div>
+);
+
+// Error State Component
+const NewsErrorState: React.FC<{ message: string; onRetry: () => void }> = ({ message, onRetry }) => (
+  <div className="col-span-full flex flex-col items-center justify-center p-12 bg-white/10 backdrop-blur-lg border border-white/20 rounded-3xl">
+    <svg className="w-16 h-16 text-red-400 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+    </svg>
+    <p className="text-white/80 text-lg mb-4">{message}</p>
+    <button
+      onClick={onRetry}
+      className="px-6 py-3 bg-white/20 hover:bg-white/30 border border-white/30 rounded-full text-white transition-all duration-300 hover:scale-105 active:scale-95"
+    >
+      Try Again
+    </button>
+  </div>
+);
+
+// News Section Component
+interface NewsSectionProps {
+  title: string;
+  gradientColor: string;
+  news: News[];
+  isLoading: boolean;
+  error: string | null;
+  backgroundImage: string;
+  onRetry: () => void;
+}
+
+const NewsSection: React.FC<NewsSectionProps> = ({
+  title,
+  gradientColor,
+  news,
+  isLoading,
+  error,
+  backgroundImage,
+  onRetry
+}) => (
+  <div className="w-full max-w-6xl mx-auto px-4 py-8 overflow-x-auto scrollbar-thin pb-4">
+    <div className="text-center mb-8">
+      <div className="inline-block relative">
+        <h2 className="text-5xl font-light text-white mb-2">{title}</h2>
+        <div className={`h-1 bg-gradient-to-r from-transparent via-${gradientColor} to-transparent rounded-full`}></div>
+      </div>
+    </div>
+    
+    {isLoading ? (
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        {[1, 2, 3, 4, 5, 6].map((i) => (
+          <NewsCardSkeleton key={i} />
+        ))}
+      </div>
+    ) : error ? (
+      <NewsErrorState message={error} onRetry={onRetry} />
+    ) : news.length === 0 ? (
+      <div className="col-span-full flex flex-col items-center justify-center p-12 bg-white/10 backdrop-blur-lg border border-white/20 rounded-3xl">
+        <svg className="w-16 h-16 text-white/50 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4" />
+        </svg>
+        <p className="text-white/80 text-lg">No news available at the moment</p>
+      </div>
+    ) : (
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        {news.map((item, idx) => (
+          <div 
+            key={idx} 
+            className="relative bg-white/20 backdrop-blur-lg border border-white/30 rounded-3xl p-6 shadow-xl hover:bg-white/30 transition-all overflow-hidden group"
+          >
+            <div className="absolute inset-0 opacity-10 group-hover:opacity-20 transition-opacity">
+              <img src={backgroundImage} alt="Background" className="w-full h-full object-cover" />
+            </div>
+            <div className="relative z-10">
+              <h3 className="text-xl font-medium text-white mb-3 break-words line-clamp-2">{item.title}</h3>
+              <p className="text-white/80 text-sm mb-4 line-clamp-3 break-words">{item.description}</p>
+              <a 
+                href={item.url} 
+                target="_blank" 
+                rel="noopener noreferrer" 
+                className="inline-flex items-center gap-2 text-blue-300 hover:text-blue-200 text-sm font-medium group-hover:gap-3 transition-all"
+              >
+                Read more 
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 7l5 5m0 0l-5 5m5-5H6" />
+                </svg>
+              </a>
+            </div>
+          </div>
+        ))}
+      </div>
+    )}
+  </div>
+);
 
 const HomePage: React.FC = () => {
   const navigate = useNavigate();
   const [tornadoNews, setTornadoNews] = useState<News[]>([]);
+  const [isLoadingTornadoNews, setIsLoadingTornadoNews] = useState(true);
+  const [tornadoError, setTornadoError] = useState<string | null>(null);
+  
   const [stormNews, setStormNews] = useState<News[]>([]);
+  const [isLoadingStormNews, setIsLoadingStormNews] = useState(true);
+  const [stormError, setStormError] = useState<string | null>(null);
+  
   const [floodNews, setFloodNews] = useState<News[]>([]);
+  const [isLoadingFloodNews, setIsLoadingFloodNews] = useState(true);
+  const [floodError, setFloodError] = useState<string | null>(null);
+  
   const [userLocationWeather, setUserLocationWeather] = useState<Weather | null>(null);
   const [currentSection, setCurrentSection] = useState(0);
   const sectionRefs = useRef<(HTMLElement | null)[]>([]);
   const [isProgrammaticScroll, setIsProgrammaticScroll] = useState(false);
+  const [hasShaken, setHasShaken] = useState(false);
+
+  const fetchTornadoNews = () => {
+    setIsLoadingTornadoNews(true);
+    setTornadoError(null);
+    fetch('/api/get_news/?query=tornado')
+      .then((response) => {
+        if (!response.ok) throw new Error('Failed to fetch tornado news');
+        return response.json();
+      })
+      .then((data) => {
+        setTornadoNews(data.news.slice(0, 6));
+        setIsLoadingTornadoNews(false);
+      })
+      .catch((error) => {
+        console.error('Tornado news error:', error);
+        setTornadoError('Failed to load tornado news. Please try again.');
+        setIsLoadingTornadoNews(false);
+      });
+  };
+
+  const fetchStormNews = () => {
+    setIsLoadingStormNews(true);
+    setStormError(null);
+    fetch('/api/get_news/?query=storm')
+      .then((response) => {
+        if (!response.ok) throw new Error('Failed to fetch storm news');
+        return response.json();
+      })
+      .then((data) => {
+        setStormNews(data.news.slice(0, 6));
+        setIsLoadingStormNews(false);
+      })
+      .catch((error) => {
+        console.error('Storm news error:', error);
+        setStormError('Failed to load storm news. Please try again.');
+        setIsLoadingStormNews(false);
+      });
+  };
+
+  const fetchFloodNews = () => {
+    setIsLoadingFloodNews(true);
+    setFloodError(null);
+    fetch('/api/get_news/?query=flood')
+      .then((response) => {
+        if (!response.ok) throw new Error('Failed to fetch flood news');
+        return response.json();
+      })
+      .then((data) => {
+        setFloodNews(data.news.slice(0, 6));
+        setIsLoadingFloodNews(false);
+      })
+      .catch((error) => {
+        console.error('Flood news error:', error);
+        setFloodError('Failed to load flood news. Please try again.');
+        setIsLoadingFloodNews(false);
+      });
+  };
 
   useEffect(() => {
-    fetch('/api/get_news/?query=tornado')
-      .then((response) => response.json())
-      .then((data) => setTornadoNews(data.news));
-
-    fetch('/api/get_news/?query=storm')
-      .then((response) => response.json())
-      .then((data) => setStormNews(data.news));
-
-    fetch('/api/get_news/?query=flood')
-      .then((response) => response.json())
-      .then((data) => setFloodNews(data.news));
+    fetchTornadoNews();
+    fetchStormNews();
+    fetchFloodNews();
 
     fetch('/api/get_user_location/')
       .then((response) => response.json())
-      .then((data) => setUserLocationWeather(data));
+      .then((data) => setUserLocationWeather(data))
+      .catch((error) => console.error('Location error:', error));
   }, []);
 
   useEffect(() => {
@@ -73,6 +238,10 @@ const HomePage: React.FC = () => {
       }
     });
 
+    if (currentSection === 0 && !hasShaken) {
+      setHasShaken(true);
+    }
+
     return () => {
       sectionRefs.current.forEach((section) => {
         if (section) {
@@ -80,7 +249,7 @@ const HomePage: React.FC = () => {
         }
       });
     };
-  }, [isProgrammaticScroll, sectionRefs]);
+  }, [isProgrammaticScroll, sectionRefs, currentSection, hasShaken]);
 
   const handleSearchClick = () => {
     navigate('/weather');
@@ -96,7 +265,7 @@ const HomePage: React.FC = () => {
     setCurrentSection(index);
     setTimeout(() => {
       setIsProgrammaticScroll(false);
-    }, 1000); // Duration of smooth scroll
+    }, 1000);
   };
 
   const handleScroll = (scrollLeft: number) => {
@@ -109,6 +278,8 @@ const HomePage: React.FC = () => {
   const handleSectionChange = (index: number) => {
     handleNavigate(index);
   };
+
+  const shakeClass = currentSection === 0 && hasShaken ? 'animate-shake-center' : '';
 
   return (
     <ThemeProvider>
@@ -146,7 +317,6 @@ const HomePage: React.FC = () => {
               >
                 {index === 0 && (
                   <div className="w-full max-w-md mx-auto px-4 py-8">
-                    {/* Location Header */}
                     <div className="text-center mb-8">
                       <div className="flex items-center justify-center gap-2 mb-2">
                         <svg className="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 24 24">
@@ -165,7 +335,6 @@ const HomePage: React.FC = () => {
                       </p>
                     </div>
 
-                    {/* Weather Info Widget with Background */}
                     <div className="relative bg-white/20 backdrop-blur-lg border border-white/30 rounded-3xl p-6 mb-4 shadow-xl overflow-hidden">
                       <div className="absolute inset-0 opacity-20">
                         <img src="/img/weather.avif" alt="Weather" className="w-full h-full object-cover" />
@@ -183,9 +352,7 @@ const HomePage: React.FC = () => {
                       </div>
                     </div>
 
-                    {/* Humidity and Pressure Widgets */}
                     <div className="grid grid-cols-2 gap-4 mb-4">
-                      {/* Humidity Widget */}
                       <div className="bg-white/20 backdrop-blur-lg border border-white/30 rounded-3xl p-6 shadow-xl">
                         <div className="flex items-center gap-2 mb-3">
                           <svg className="w-5 h-5 text-white/70" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -193,11 +360,14 @@ const HomePage: React.FC = () => {
                           </svg>
                           <span className="text-white/70 text-xs uppercase tracking-wide">Humidity</span>
                         </div>
-                        <p className="text-white text-5xl font-light mb-2">79%</p>
-                        <p className="text-white/80 text-sm">Comfortable humidity level</p>
+                        <p className="text-white text-5xl font-light mb-2">
+                          {userLocationWeather?.humidity ? `${userLocationWeather.humidity}%` : '--%'}
+                        </p>
+                        <p className="text-white/80 text-sm">
+                          {userLocationWeather?.humidity ? 'Current humidity level' : 'Loading humidity...'}
+                        </p>
                       </div>
 
-                      {/* Wind Widget */}
                       <div className="relative bg-white/20 backdrop-blur-lg border border-white/30 rounded-3xl p-6 shadow-xl overflow-hidden">
                         <div className="absolute inset-0 opacity-10">
                           <img src="/img/wind.png" alt="Wind" className="w-full h-full object-cover" />
@@ -209,13 +379,16 @@ const HomePage: React.FC = () => {
                             </svg>
                             <span className="text-white/70 text-xs uppercase tracking-wide">Wind</span>
                           </div>
-                          <p className="text-white text-4xl font-light mb-1">12</p>
-                          <p className="text-white/80 text-sm">km/h NW</p>
+                          <p className="text-white text-4xl font-light mb-1">
+                            {userLocationWeather?.wind_speed ? `${userLocationWeather.wind_speed}` : '--'}
+                          </p>
+                          <p className="text-white/80 text-sm">
+                            {userLocationWeather?.wind_speed ? 'km/h' : 'Loading wind speed...'}
+                          </p>
                         </div>
                       </div>
                     </div>
 
-                    {/* Search Widget */}
                     <div 
                       onClick={handleSearchClick}
                       className="relative bg-white/20 backdrop-blur-lg border border-white/30 rounded-3xl p-6 shadow-xl overflow-hidden cursor-pointer hover:bg-white/30 transition-all group"
@@ -225,7 +398,7 @@ const HomePage: React.FC = () => {
                       </div>
                       <div className="relative z-10 flex items-center gap-4">
                         <div className="w-12 h-12 bg-blue-500/30 rounded-full flex items-center justify-center flex-shrink-0">
-                          <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <svg className={`w-6 h-6 text-white ${shakeClass}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                           </svg>
                         </div>
@@ -238,126 +411,43 @@ const HomePage: React.FC = () => {
                   </div>
                 )}
 
-                {index === 1 && (
-                  <MostViewed />
-                )}
-
-                {index === 2 && (
-                  <WeatherMap isActive={currentSection === 2} />
-                )}
-
+                {index === 1 && <MostViewed />}
+                {index === 2 && <WeatherMap isActive={currentSection === 2} />}
+                
                 {index === 3 && (
-                  <div className="w-full max-w-6xl mx-auto px-4 py-8 overflow-x-auto scrollbar-thin pb-4">
-                    <div className="text-center mb-8">
-                      <div className="inline-block relative">
-                        <h2 className="text-5xl font-light text-white mb-2">Tornado News</h2>
-                        <div className="h-1 bg-gradient-to-r from-transparent via-red-500 to-transparent rounded-full"></div>
-                      </div>
-                    </div>
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                      {tornadoNews.map((news, idx) => (
-                        <div 
-                          key={idx} 
-                          className="relative bg-white/20 backdrop-blur-lg border border-white/30 rounded-3xl p-6 shadow-xl hover:bg-white/30 transition-all overflow-hidden group"
-                        >
-                          <div className="absolute inset-0 opacity-10 group-hover:opacity-20 transition-opacity">
-                            <img src="/img/tornado.jpg" alt="Tornado" className="w-full h-full object-cover" />
-                          </div>
-                          <div className="relative z-10">
-                            <h3 className="text-xl font-medium text-white mb-3 break-words">{news.title}</h3>
-                            <p className="text-white/80 text-sm mb-4 line-clamp-3 break-words">{news.description}</p>
-                            <a 
-                              href={news.url} 
-                              target="_blank" 
-                              rel="noopener noreferrer" 
-                              className="inline-flex items-center gap-2 text-blue-300 hover:text-blue-200 text-sm font-medium"
-                            >
-                              Read more 
-                              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 7l5 5m0 0l-5 5m5-5H6" />
-                              </svg>
-                            </a>
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
+                  <NewsSection
+                    title="Tornado News"
+                    gradientColor="red-500"
+                    news={tornadoNews}
+                    isLoading={isLoadingTornadoNews}
+                    error={tornadoError}
+                    backgroundImage="/img/tornado.jpg"
+                    onRetry={fetchTornadoNews}
+                  />
                 )}
 
                 {index === 4 && (
-                  <div className="w-full max-w-6xl mx-auto px-4 py-8 overflow-x-auto scrollbar-thin pb-4">
-                    <div className="text-center mb-8">
-                      <div className="inline-block relative">
-                        <h2 className="text-5xl font-light text-white mb-2">Storm News</h2>
-                        <div className="h-1 bg-gradient-to-r from-transparent via-blue-500 to-transparent rounded-full"></div>
-                      </div>
-                    </div>
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                      {stormNews.map((news, idx) => (
-                        <div 
-                          key={idx} 
-                          className="relative bg-white/20 backdrop-blur-lg border border-white/30 rounded-3xl p-6 shadow-xl hover:bg-white/30 transition-all overflow-hidden group"
-                        >
-                          <div className="absolute inset-0 opacity-10 group-hover:opacity-20 transition-opacity">
-                            <img src="/img/storm.jpg" alt="Storm" className="w-full h-full object-cover" />
-                          </div>
-                          <div className="relative z-10">
-                            <h3 className="text-xl font-medium text-white mb-3 break-words">{news.title}</h3>
-                            <p className="text-white/80 text-sm mb-4 line-clamp-3 break-words">{news.description}</p>
-                            <a 
-                              href={news.url} 
-                              target="_blank" 
-                              rel="noopener noreferrer" 
-                              className="inline-flex items-center gap-2 text-blue-300 hover:text-blue-200 text-sm font-medium"
-                            >
-                              Read more 
-                              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 7l5 5m0 0l-5 5m5-5H6" />
-                              </svg>
-                            </a>
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
+                  <NewsSection
+                    title="Storm News"
+                    gradientColor="blue-500"
+                    news={stormNews}
+                    isLoading={isLoadingStormNews}
+                    error={stormError}
+                    backgroundImage="/img/storm.jpg"
+                    onRetry={fetchStormNews}
+                  />
                 )}
 
                 {index === 5 && (
-                  <div className="w-full max-w-6xl mx-auto px-4 py-8 overflow-x-auto scrollbar-thin pb-4">
-                    <div className="text-center mb-8">
-                      <div className="inline-block relative">
-                        <h2 className="text-5xl font-light text-white mb-2">Flood News</h2>
-                        <div className="h-1 bg-gradient-to-r from-transparent via-cyan-500 to-transparent rounded-full"></div>
-                      </div>
-                    </div>
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                      {floodNews.map((news, idx) => (
-                        <div 
-                          key={idx} 
-                          className="relative bg-white/20 backdrop-blur-lg border border-white/30 rounded-3xl p-6 shadow-xl hover:bg-white/30 transition-all overflow-hidden group"
-                        >
-                          <div className="absolute inset-0 opacity-10 group-hover:opacity-20 transition-opacity">
-                            <img src="/img/flood.jpg" alt="Flood" className="w-full h-full object-cover" />
-                          </div>
-                          <div className="relative z-10">
-                            <h3 className="text-xl font-medium text-white mb-3 break-words">{news.title}</h3>
-                            <p className="text-white/80 text-sm mb-4 line-clamp-3 break-words">{news.description}</p>
-                            <a 
-                              href={news.url} 
-                              target="_blank" 
-                              rel="noopener noreferrer" 
-                              className="inline-flex items-center gap-2 text-blue-300 hover:text-blue-200 text-sm font-medium"
-                            >
-                              Read more 
-                              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 7l5 5m0 0l-5 5m5-5H6" />
-                              </svg>
-                            </a>
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
+                  <NewsSection
+                    title="Flood News"
+                    gradientColor="cyan-500"
+                    news={floodNews}
+                    isLoading={isLoadingFloodNews}
+                    error={floodError}
+                    backgroundImage="/img/flood.jpg"
+                    onRetry={fetchFloodNews}
+                  />
                 )}
               </section>
             ))}

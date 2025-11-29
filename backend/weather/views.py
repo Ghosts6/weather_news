@@ -162,7 +162,7 @@ def get_news_view(request):
     if query.lower() in ['tornado', 'storm', 'flood']:
         query = f'{query} AND (weather OR disaster OR warning OR damage OR alert)'
     
-    news = get_news(query)
+    news = get_news(query, count=6)
     return JsonResponse({'news': news})
 
 def get_user_location_view(request):

@@ -3,6 +3,12 @@ import { useNavigate } from 'react-router-dom';
 import { ThemeProvider } from '../context/ThemeContext';
 import Header from '../components/layout/Header';
 import ParticlesBackground from '../components/layout/ParticlesBackground';
+import HumidityIcon from '../components/icons/HumidityIcon';
+import WindIcon from '../components/icons/WindIcon';
+import SunriseIcon from '../components/icons/SunriseIcon';
+import SunsetIcon from '../components/icons/SunsetIcon';
+import PressureIcon from '../components/icons/PressureIcon';
+import ClockIcon from '../components/icons/ClockIcon';
 
 interface WeatherData {
   city_name: string;
@@ -86,8 +92,8 @@ const SearchForm: React.FC<SearchFormProps> = ({
             disabled={isLoading}
             className="w-full p-4 pr-12 rounded-full bg-white/10 text-white placeholder-white/50 border-2 border-white/20 focus:outline-none focus:ring-2 focus:ring-cyan-400 focus:border-cyan-400 backdrop-blur-sm transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
           />
-          <button 
-            type="submit" 
+          <button
+            type="submit"
             disabled={isLoading || !city.trim()}
             className="absolute top-1/2 right-4 -translate-y-1/2 text-white/50 hover:text-white transition-all duration-300 disabled:opacity-30 disabled:cursor-not-allowed"
           >
@@ -99,8 +105,7 @@ const SearchForm: React.FC<SearchFormProps> = ({
               </svg>
             )}
           </button>
-        </div>
-        
+        </div>        
         {showSuggestions && (
           <div 
             ref={dropdownRef}
@@ -355,7 +360,7 @@ const WeatherPage: React.FC = () => {
                         {/* Left Column */}
                         <div className="space-y-4">
                           {/* Main Weather Card */}
-                          <div className="bg-white/10 backdrop-blur-lg border border-white/20 rounded-3xl p-6 shadow-xl text-white hover:bg-white/15 transition-all duration-300">
+                          <div className="bg-white/20 backdrop-blur-lg border border-white/30 rounded-3xl p-6 shadow-2xl text-white hover:bg-white/25 transition-all duration-300">
                             <div className="flex justify-between items-start">
                               <div className="flex-1">
                                 <div className="flex items-center gap-2 mb-2">
@@ -378,32 +383,28 @@ const WeatherPage: React.FC = () => {
                               </div>
                             </div>
                           </div>
-
+                  
                           {/* Weather Stats Grid */}
                           <div className="grid grid-cols-2 gap-4">
-                            <div className="bg-white/10 backdrop-blur-lg border border-white/20 rounded-3xl p-5 shadow-xl text-white hover:bg-white/15 transition-all duration-300">
+                            <div className="bg-white/20 backdrop-blur-lg border border-white/30 rounded-3xl p-5 shadow-2xl text-white hover:bg-white/25 transition-all duration-300">
                               <div className="flex items-center gap-2 mb-2">
-                                <svg className="w-5 h-5 text-blue-400" fill="currentColor" viewBox="0 0 24 24">
-                                  <path d="M12 2.69l5.66 5.66a8 8 0 11-11.31 0z" />
-                                </svg>
+                                <HumidityIcon className="w-5 h-5 text-blue-400" />
                                 <h3 className="text-xs uppercase text-white/70">Humidity</h3>
                               </div>
                               <p className="text-4xl font-light">{weatherData.humidity}%</p>
                             </div>
-                            
-                            <div className="bg-white/10 backdrop-blur-lg border border-white/20 rounded-3xl p-5 shadow-xl text-white hover:bg-white/15 transition-all duration-300">
+                                              
+                            <div className="bg-white/20 backdrop-blur-lg border border-white/30 rounded-3xl p-5 shadow-2xl text-white hover:bg-white/25 transition-all duration-300">
                               <div className="flex items-center gap-2 mb-2">
-                                <svg className="w-5 h-5 text-cyan-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M14 5l7 7m0 0l-7 7m7-7H3" />
-                                </svg>
+                                <WindIcon className="w-5 h-5 text-cyan-400" />
                                 <h3 className="text-xs uppercase text-white/70">Wind Speed</h3>
                               </div>
                               <p className="text-4xl font-light">{weatherData.wind_speed} m/s</p>
                             </div>
                           </div>
-
+                  
                           {/* Additional Details */}
-                          <div className="bg-white/10 backdrop-blur-lg border border-white/20 rounded-3xl p-5 shadow-xl text-white hover:bg-white/15 transition-all duration-300">
+                          <div className="bg-white/20 backdrop-blur-lg border border-white/30 rounded-3xl p-5 shadow-2xl text-white hover:bg-white/25 transition-all duration-300">
                             <h3 className="text-xs uppercase text-white/70 mb-4 flex items-center gap-2">
                               <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
@@ -411,58 +412,67 @@ const WeatherPage: React.FC = () => {
                               More Details
                             </h3>
                             <div className="grid grid-cols-3 gap-4 text-center">
-                              <div>
-                                <svg className="w-6 h-6 text-orange-400 mx-auto mb-1" fill="currentColor" viewBox="0 0 24 24">
-                                  <path d="M12 2.25a.75.75 0 01.75.75v2.25a.75.75 0 01-1.5 0V3a.75.75 0 01.75-.75zM7.5 12a4.5 4.5 0 119 0 4.5 4.5 0 01-9 0zM18.894 6.166a.75.75 0 00-1.06-1.06l-1.591 1.59a.75.75 0 101.06 1.061l1.591-1.59zM21.75 12a.75.75 0 01-.75.75h-2.25a.75.75 0 010-1.5H21a.75.75 0 01.75.75zM17.834 18.894a.75.75 0 001.06-1.06l-1.59-1.591a.75.75 0 10-1.061 1.06l1.59 1.591zM12 18a.75.75 0 01.75.75V21a.75.75 0 01-1.5 0v-2.25A.75.75 0 0112 18zM7.758 17.303a.75.75 0 00-1.061-1.06l-1.591 1.59a.75.75 0 001.06 1.061l1.591-1.59zM6 12a.75.75 0 01-.75.75H3a.75.75 0 010-1.5h2.25A.75.75 0 016 12zM6.697 7.757a.75.75 0 001.06-1.06l-1.59-1.591a.75.75 0 00-1.061 1.06l1.59 1.591z" />
-                                </svg>
-                                <p className="text-xs text-white/70">Sunrise</p>
+                              <div className="flex flex-col items-center">
+                                <div className="flex items-center gap-1 mb-1">
+                                  <SunriseIcon className="w-5 h-5 text-orange-400" />
+                                  <p className="text-sm text-white/70">Sunrise</p>
+                                </div>
                                 <p className="text-lg font-bold">{weatherData.sunrise}</p>
                               </div>
-                              <div>
-                                <svg className="w-6 h-6 text-purple-400 mx-auto mb-1" fill="currentColor" viewBox="0 0 24 24">
-                                  <path d="M12 2.25a.75.75 0 01.75.75v2.25a.75.75 0 01-1.5 0V3a.75.75 0 01.75-.75zM7.5 12a4.5 4.5 0 119 0 4.5 4.5 0 01-9 0zM18.894 6.166a.75.75 0 00-1.06-1.06l-1.591 1.59a.75.75 0 101.06 1.061l1.591-1.59zM21.75 12a.75.75 0 01-.75.75h-2.25a.75.75 0 010-1.5H21a.75.75 0 01.75.75zM17.834 18.894a.75.75 0 001.06-1.06l-1.59-1.591a.75.75 0 10-1.061 1.06l1.59 1.591zM12 18a.75.75 0 01.75.75V21a.75.75 0 01-1.5 0v-2.25A.75.75 0 0112 18z" opacity="0.5" />
-                                </svg>
-                                <p className="text-xs text-white/70">Sunset</p>
+                              <div className="flex flex-col items-center">
+                                <div className="flex items-center gap-1 mb-1">
+                                  <SunsetIcon className="w-5 h-5 text-purple-400" />
+                                  <p className="text-sm text-white/70">Sunset</p>
+                                </div>
                                 <p className="text-lg font-bold">{weatherData.sunset}</p>
                               </div>
-                              <div>
-                                <svg className="w-6 h-6 text-green-400 mx-auto mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                  <circle cx="12" cy="12" r="10" strokeWidth="2" />
-                                </svg>
-                                <p className="text-xs text-white/70">Pressure</p>
+                              <div className="flex flex-col items-center">
+                                <div className="flex items-center gap-1 mb-1">
+                                  <PressureIcon className="w-5 h-5 text-green-400" />
+                                  <p className="text-sm text-white/70">Pressure</p>
+                                </div>
                                 <p className="text-lg font-bold">{weatherData.pressure}</p>
                                 <p className="text-xs text-white/60">hPa</p>
                               </div>
                             </div>
                           </div>
                         </div>
-
+                  
                         {/* Right Column */}
                         <div className="space-y-4">
                           {/* Hourly Forecast */}
-                          <div className="bg-white/10 backdrop-blur-lg border border-white/20 rounded-3xl p-5 shadow-xl text-white hover:bg-white/15 transition-all duration-300">
+                          <div className="bg-white/20 backdrop-blur-lg border border-white/30 rounded-3xl p-5 shadow-2xl text-white hover:bg-white/25 transition-all duration-300">
                             <h3 className="text-xs uppercase text-white/70 mb-4 flex items-center gap-2">
-                              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                              </svg>
+                              <ClockIcon className="w-4 h-4" fill="currentColor"/>
                               Hourly Forecast
                             </h3>
                             <div className="flex overflow-x-auto space-x-3 pb-2 scrollbar-thin scrollbar-thumb-white/20 scrollbar-track-transparent">
-                              {weatherData.hourly_forecast.slice(0, 12).map((hour, index) => (
-                                <div key={index} className="flex-shrink-0 w-20 text-center bg-white/5 hover:bg-white/10 p-3 rounded-2xl transition-all duration-300">
-                                  <p className="text-xs font-medium mb-1">{hour.time}</p>
-                                  <img src={hour.icon} alt={hour.description} className="mx-auto my-1 w-10 h-10" />
-                                  <p className="font-bold text-lg">{Math.round(hour.temperature)}°</p>
-                                </div>
-                              ))}
+                              {(() => {
+                                const now = new Date();
+                                const currentHour = now.getHours();
+                                const startIndex = weatherData.hourly_forecast.findIndex(
+                                  (hour) => parseInt(hour.time.split(':')[0]) >= currentHour
+                                );
+                                const relevantHourlyForecast = weatherData.hourly_forecast.slice(
+                                  startIndex !== -1 ? startIndex : 0,
+                                  (startIndex !== -1 ? startIndex : 0) + 12
+                                );
+                                return relevantHourlyForecast.map((hour, index) => (
+                                  <div key={index} className="flex-shrink-0 w-20 text-center bg-white/5 hover:bg-white/10 p-3 rounded-2xl transition-all duration-300">
+                                    <p className="text-xs font-medium mb-1">{hour.time}</p>
+                                    <img src={hour.icon} alt={hour.description} className="mx-auto my-1 w-10 h-10" />
+                                    <p className="font-bold text-lg">{Math.round(hour.temperature)}°</p>
+                                  </div>
+                                ));
+                              })()}
                             </div>
                           </div>
-
+                  
                           {/* 3-Day Forecast */}
-                          <div className="bg-white/10 backdrop-blur-lg border border-white/20 rounded-3xl p-5 shadow-xl text-white hover:bg-white/15 transition-all duration-300">
+                          <div className="bg-white/20 backdrop-blur-lg border border-white/30 rounded-3xl p-5 shadow-2xl text-white hover:bg-white/25 transition-all duration-300">
                             <h3 className="text-xs uppercase text-white/70 mb-4 flex items-center gap-2">
-                              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                              <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
+                                <path d="M19 4h-2V2h-2v2H9V2H7v2H5c-1.11 0-1.99.9-1.99 2L3 20c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 16H5V9h14v11zM5 7V6h14v1H5z"/>
                               </svg>
                               3-Day Forecast
                             </h3>

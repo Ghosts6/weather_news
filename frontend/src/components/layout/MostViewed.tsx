@@ -1,35 +1,115 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Weather } from '../../interfaces/Weather';
 import WeatherIcon from './WeatherIcon';
 
 const CITIES = ['Toronto', 'Ottawa', 'Paris', 'London', 'New York', 'Tokyo'];
 
+// Loading Skeleton for City List Item
+const CityListSkeleton: React.FC = () => (
+  <li className="p-3 rounded-xl bg-white/10 animate-pulse">
+    <div className="flex justify-between items-center">
+      <div className="flex-1">
+        <div className="h-4 bg-white/30 rounded w-24 mb-2"></div>
+        <div className="h-3 bg-white/20 rounded w-32"></div>
+      </div>
+      <div className="h-8 w-12 bg-white/30 rounded"></div>
+    </div>
+  </li>
+);
+
+// Loading Skeleton for Weather Details
+const WeatherDetailsSkeleton: React.FC = () => (
+  <div className="bg-white/20 backdrop-blur-xl border border-white/30 rounded-3xl shadow-2xl overflow-hidden flex-grow flex flex-col animate-pulse">
+    <div className="p-6 md:p-8 text-center flex-shrink-0">
+      <div className="h-10 bg-white/30 rounded w-48 mx-auto mb-4"></div>
+      <div className="h-20 bg-white/30 rounded w-32 mx-auto mb-4"></div>
+      <div className="h-6 bg-white/20 rounded w-40 mx-auto"></div>
+    </div>
+    <div className="bg-black/20 p-4 grid grid-cols-2 gap-4 border-t border-white/20 flex-shrink-0">
+      <div className="text-center">
+        <div className="h-3 bg-white/20 rounded w-16 mx-auto mb-2"></div>
+        <div className="h-6 bg-white/30 rounded w-12 mx-auto"></div>
+      </div>
+      <div className="text-center">
+        <div className="h-3 bg-white/20 rounded w-16 mx-auto mb-2"></div>
+        <div className="h-6 bg-white/30 rounded w-12 mx-auto"></div>
+      </div>
+    </div>
+    <div className="p-4 flex-grow">
+      <div className="h-4 bg-white/30 rounded w-32 mb-3"></div>
+      <div className="flex space-x-3">
+        {[1, 2, 3, 4].map((i) => (
+          <div key={i} className="flex-shrink-0 bg-white/10 rounded-xl p-3 w-24 h-28"></div>
+        ))}
+      </div>
+    </div>
+  </div>
+);
+
+// Error State Component
+const ErrorState: React.FC<{ message: string; onRetry: () => void }> = ({ message, onRetry }) => (
+  <div className="w-full h-full flex items-center justify-center">
+    <div className="bg-white/10 backdrop-blur-lg border border-white/20 rounded-3xl p-12 text-center max-w-md">
+      <svg className="w-20 h-20 text-red-400 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+      </svg>
+      <h3 className="text-2xl font-bold text-white mb-2">Oops!</h3>
+      <p className="text-white/80 text-lg mb-6">{message}</p>
+      <button
+        onClick={onRetry}
+        className="px-8 py-3 bg-blue-500 hover:bg-blue-600 text-white font-medium rounded-full transition-all duration-300 hover:scale-105 active:scale-95 shadow-lg"
+      >
+        Try Again
+      </button>
+    </div>
+  </div>
+);
+
 const MostViewed: React.FC = () => {
   const [weatherData, setWeatherData] = useState<Weather[]>([]);
   const [selectedCity, setSelectedCity] = useState<Weather | null>(null);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const hourlyForecastRef = useRef<HTMLDivElement>(null);
+
+  const handleWheel = (e: React.WheelEvent<HTMLDivElement>) => {
+    if (hourlyForecastRef.current) {
+      if (hourlyForecastRef.current.scrollWidth > hourlyForecastRef.current.clientWidth) {
+        if (Math.abs(e.deltaX) > 0) {
+          e.preventDefault();
+          e.stopPropagation();
+          hourlyForecastRef.current.scrollLeft += e.deltaX;
+        }
+      }
+    }
+  };
+
+  const fetchWeatherData = async () => {
+    setLoading(true);
+    setError(null);
+    
+    try {
+      const data = await Promise.all(
+        CITIES.map(async (city) => {
+          const response = await fetch(`/api/get_weather_data/?city_name=${city}`);
+          if (!response.ok) {
+            throw new Error(`Failed to fetch weather for ${city}`);
+          }
+          return response.json();
+        })
+      );
+      setWeatherData(data);
+      setSelectedCity(data[0]);
+      setError(null);
+    } catch (error) {
+      console.error("Error fetching weather data:", error);
+      setError('Failed to load popular locations. Please try again.');
+    } finally {
+      setLoading(false);
+    }
+  };
 
   useEffect(() => {
-    const fetchWeatherData = async () => {
-      try {
-        const data = await Promise.all(
-          CITIES.map(async (city) => {
-            const response = await fetch(`/api/get_weather_data/?city_name=${city}`);
-            if (!response.ok) {
-              throw new Error(`Failed to fetch weather for ${city}`);
-            }
-            return response.json();
-          })
-        );
-        setWeatherData(data);
-        setSelectedCity(data[0]);
-      } catch (error) {
-        console.error("Error fetching weather data:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
     fetchWeatherData();
   }, []);
 
@@ -37,10 +117,35 @@ const MostViewed: React.FC = () => {
     setSelectedCity(city);
   };
 
+  if (error) {
+    return <ErrorState message={error} onRetry={fetchWeatherData} />;
+  }
+
   if (loading) {
     return (
-      <div className="w-full h-full flex items-center justify-center">
-        <p className="text-white text-2xl">Loading popular locations...</p>
+      <div className="w-full max-w-6xl mx-auto px-4 py-4 h-[80vh] flex flex-col">
+        <div className="text-center mb-8">
+          <div className="inline-block relative">
+            <h2 className="text-5xl font-light text-white mb-2">Popular Locations</h2>
+            <div className="h-1 bg-gradient-to-r from-transparent via-blue-500 to-transparent rounded-full"></div>
+          </div>
+        </div>
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start flex-grow">
+          {/* City List Skeleton */}
+          <div className="lg:col-span-1 bg-white/10 backdrop-blur-lg border border-white/20 rounded-3xl p-6 flex flex-col h-full">
+            <h3 className="text-white text-xl font-medium mb-4">Locations</h3>
+            <ul className="space-y-2">
+              {[1, 2, 3, 4, 5, 6].map((i) => (
+                <CityListSkeleton key={i} />
+              ))}
+            </ul>
+          </div>
+
+          {/* Weather Details Skeleton */}
+          <div className="lg:col-span-2 flex flex-col h-full">
+            <WeatherDetailsSkeleton />
+          </div>
+        </div>
       </div>
     );
   }
@@ -70,7 +175,7 @@ const MostViewed: React.FC = () => {
               >
                 <div>
                   <p className="text-white text-md font-semibold">{weather.city_name}</p>
-                  <p className="text-white/70 text-xs">{weather.description}</p>
+                  <p className="text-white/70 text-xs capitalize">{weather.description}</p>
                 </div>
                 <p className="text-white text-2xl font-light">{Math.round(weather.temperature)}°</p>
               </li>
@@ -85,7 +190,7 @@ const MostViewed: React.FC = () => {
               {/* Main Weather Info */}
               <div className="p-6 md:p-8 text-center relative flex-shrink-0">
                 <div className="absolute top-0 left-0 w-full h-full opacity-10">
-                  <img src={`/img/weather-search.jpg`} alt="background" className="w-full h-full object-cover"/>
+                  <img src="/img/weather-search.jpg" alt="background" className="w-full h-full object-cover"/>
                 </div>
                 <div className="relative z-10">
                   <h3 className="text-4xl md:text-5xl font-bold text-white mb-2 break-words">{selectedCity.city_name}</h3>
@@ -110,16 +215,35 @@ const MostViewed: React.FC = () => {
               </div>
 
               {/* Hourly Forecast */}
-              <div className="p-4 flex-grow overflow-y-auto custom-scrollbar">
+              <div className="p-4 flex-grow overflow-y-auto scrollbar-thin">
                 <h4 className="text-white text-md font-medium mb-3 px-2">Hourly Forecast</h4>
-                <div className="flex overflow-x-auto space-x-3 pb-2">
-                  {selectedCity.hourly_forecast.map((hour, index) => (
-                    <div key={index} className="flex-shrink-0 bg-white/10 rounded-xl p-3 text-center w-24">
-                      <p className="text-white/80 text-xs">{hour.time}</p>
-                      <img src={hour.icon} alt="hourly icon" className="w-10 h-10 mx-auto" />
-                      <p className="text-white text-lg font-bold">{Math.round(hour.temperature)}°C</p>
-                    </div>
-                  ))}
+                <div
+                  ref={hourlyForecastRef}
+                  onWheel={handleWheel}
+                  className="flex overflow-x-auto space-x-3 pb-2 scrollbar-thin"
+                >
+                  {selectedCity.hourly_forecast && selectedCity.hourly_forecast.length > 0 ? (
+                    (() => {
+                      const now = new Date();
+                      const currentHour = now.getHours();
+                      const startIndex = selectedCity.hourly_forecast.findIndex(
+                        (hour) => parseInt(hour.time.split(':')[0]) >= currentHour
+                      );
+                      const relevantHourlyForecast = selectedCity.hourly_forecast.slice(
+                        startIndex !== -1 ? startIndex : 0,
+                        (startIndex !== -1 ? startIndex : 0) + 12
+                      );
+                      return relevantHourlyForecast.map((hour, index) => (
+                        <div key={index} className="flex-shrink-0 bg-white/10 hover:bg-white/15 rounded-xl p-3 text-center w-24 transition-all">
+                          <p className="text-white/80 text-xs">{hour.time}</p>
+                          <img src={hour.icon} alt="hourly icon" className="w-10 h-10 mx-auto" />
+                          <p className="text-white text-lg font-bold">{Math.round(hour.temperature)}°C</p>
+                        </div>
+                      ));
+                    })()
+                  ) : (
+                    <p className="text-white/60 text-sm">No hourly forecast available</p>
+                  )}
                 </div>
               </div>
             </div>
