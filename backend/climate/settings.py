@@ -1,6 +1,8 @@
 import os
 from pathlib import Path
 from dotenv import load_dotenv
+import dj_database_url
+from datetime import timedelta
 
 load_dotenv()
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -9,46 +11,44 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 SECRET_KEY = os.getenv('SECRET_KEY')
 
-# Uncomment on production
+
+# --- SECURITY SETTINGS ---
+# In production, uncomment
 
 # HTTP Strict Transport Security (HSTS)
-# SECURE_HSTS_SECONDS = 31536000  
-# SECURE_HSTS_INCLUDE_SUBDOMAINS = True 
-# SECURE_HSTS_PRELOAD = True  
+# SECURE_HSTS_SECONDS = 31536000  # 1 year
+# SECURE_HSTS_INCLUDE_SUBDOMAINS = True
+# SECURE_HSTS_PRELOAD = True
 
 # SSL/TLS Settings
-# SECURE_SSL_REDIRECT = True 
-# SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')  
+# SECURE_SSL_REDIRECT = True
+# SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 
 # Session and Cookie Security
-# SESSION_COOKIE_SECURE = True  
-# SESSION_COOKIE_AGE = 1209600  
-# SESSION_COOKIE_DOMAIN = '.*'  
-# SESSION_COOKIE_SAMESITE = 'Lax'  
+# SESSION_COOKIE_SECURE = True
+# SESSION_COOKIE_AGE = 1209600  # 2 weeks
+# SESSION_COOKIE_DOMAIN = '.*'
+# SESSION_COOKIE_SAMESITE = 'Lax'
 # CSRF_COOKIE_SECURE = True
-# CSRF_COOKIE_DOMAIN = '.*' 
-# CSRF_COOKIE_SAMESITE = 'Lax'  
+# CSRF_COOKIE_DOMAIN = '.*'
+# CSRF_COOKIE_SAMESITE = 'Lax'
 
 # Content Security
-# SECURE_CONTENT_TYPE_NOSNIFF = True  
-# X_FRAME_OPTIONS = 'DENY'  
+# SECURE_CONTENT_TYPE_NOSNIFF = True
+# X_FRAME_OPTIONS = 'DENY'
 
 # CSRF Trusted Origins
-# CSRF_TRUSTED_ORIGINS = [
-#     '*',
-# ]
+# CSRF_TRUSTED_ORIGINS = ['*']
 
-CORS_ALLOWED_ORIGINS = [
-    "http://localhost:home",
-    "http://localhost:weather",
-]
+
+CORS_ALLOWED_ORIGINS = os.getenv('CORS_ALLOWED_ORIGINS', 'http://localhost:3001,http://127.0.0.1:3001').split(',')
 
 # Site and Domain Settings
 # SITE_DOMAIN = ''
 
 # Debug and Allowed Hosts
-DEBUG = False
-ALLOWED_HOSTS = ['*']
+DEBUG = os.getenv('DJANGO_DEBUG', 'False') == 'True'
+ALLOWED_HOSTS = os.getenv('DJANGO_ALLOWED_HOSTS', '127.0.0.1,localhost,backend').split(',')
 
 
 # Application definition
@@ -60,18 +60,23 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'rest_framework',
+    'knox',
+    'authentication',
     'weather',
+    'corsheaders',
 ]
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
-    'whitenoise.middleware.WhiteNoiseMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'weather.middleware.ExceptionHandlingMiddleware',
 ]
 
 ROOT_URLCONF = 'climate.urls'
@@ -97,18 +102,15 @@ WSGI_APPLICATION = 'climate.wsgi.application'
 
 
 # Database
-# https://docs.djangoproject.com/en/4.2/ref/settings/#databases
 
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
-    }
+    'default': dj_database_url.config(
+        default=f"sqlite:///{BASE_DIR / 'db.sqlite3'}"
+    )
 }
 
 
 # Password validation
-# https://docs.djangoproject.com/en/4.2/ref/settings/#auth-password-validators
 
 AUTH_PASSWORD_VALIDATORS = [
     {
@@ -127,7 +129,6 @@ AUTH_PASSWORD_VALIDATORS = [
 
 
 # Internationalization
-# https://docs.djangoproject.com/en/4.2/topics/i18n/
 
 LANGUAGE_CODE = 'en-us'
 
@@ -139,47 +140,26 @@ USE_TZ = True
 
 
 # Static files (CSS, JavaScript, Images)
-# https://docs.djangoproject.com/en/4.2/howto/static-files/
 
 MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'
 
 
 STATIC_URL = '/static/'
-STATIC_ROOT = BASE_DIR / 'staticfiles'
-STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
-STATICFILES_DIRS = [
-    BASE_DIR / 'climate/static',
-]
-BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 # Default primary key field type
-# https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
-
-import os
 
 # CACHES CONFIGS
 CACHES = {
     'default': {
-        'BACKEND': 'django.core.cache.backends.filebased.FileBasedCache',
-        'LOCATION': os.path.join(BASE_DIR, 'cache'),  
-        'TIMEOUT': 3600,  
+        'BACKEND': 'django_redis.cache.RedisCache',
+        'LOCATION': os.getenv('REDIS_URL', 'redis://127.0.0.1:6379/1'),
         'OPTIONS': {
-            'MAX_ENTRIES': 100,  
-            'COMPRESS': True,  
-            'CULL_FREQUENCY': 3, 
+            'CLIENT_CLASS': 'django_redis.client.DefaultClient',
         }
     }
-    # Uncomment the following code for Redis cache in production
-    # 'default': {
-    #     'BACKEND': 'django_redis.cache.RedisCache',
-    #     'LOCATION': 'redis://127.0.0.1:6379/1',  # Change for production Redis setup
-    #     'OPTIONS': {
-    #         'CLIENT_CLASS': 'django_redis.client.DefaultClient',
-    #     }
-    # }
 }
 
 SESSION_ENGINE = 'django.contrib.sessions.backends.cache'
@@ -187,47 +167,68 @@ SESSION_CACHE_ALIAS = 'default'
 
 # Test config
 TEST_RUNNER = 'test_runner.PytestTestRunner'
-# uncommend for debug
-# Log
-# LOGGING = {
-#     'version': 1,
-#     'disable_existing_loggers': False,
-#     'formatters': {
-#         'verbose': {
-#             'format': '[%(asctime)s] [%(levelname)s] [%(name)s:%(lineno)s] %(message)s',
-#             'datefmt': '%Y-%m-%d %H:%M:%S'
-#         },
-#         'simple': {
-#             'format': '[%(asctime)s] [%(levelname)s] %(message)s',
-#             'datefmt': '%Y-%m-%d %H:%M:%S'
-#         },
-#     },
-#     'handlers': {
-#         'file': {
-#             'level': 'INFO',  
-#             'class': 'logging.handlers.RotatingFileHandler',
-#             'filename': 'climate/Logs/log.txt',
-#             'maxBytes': 1024 * 1024 * 15,  
-#             'backupCount': 10,
-#             'formatter': 'verbose',
-#         },
-#         'console': {
-#             'level': 'INFO',
-#             'class': 'logging.StreamHandler',
-#             'formatter': 'simple',
-#         },
-#     },
-#     'loggers': {
-#         'django': {
-#             'handlers': ['file', 'console'],
-#             'level': 'INFO',  
-#             'propagate': True,
-#         },
-#         'weather': {
-#             'handlers': ['file', 'console'],
-#             'level': 'INFO',
-#             'propagate': False,
-#         },
-#     },
-# }
 
+LOG_DIR = os.path.join(BASE_DIR, 'climate', 'Logs')
+os.makedirs(LOG_DIR, exist_ok=True)
+
+# Log
+LOG_LEVEL = os.getenv('DJANGO_LOG_LEVEL', 'INFO').upper()
+
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'formatters': {
+        'verbose': {
+            'format': '[%(asctime)s] [%(levelname)s] [%(name)s:%(lineno)s] %(message)s',
+            'datefmt': '%Y-%m-%d %H:%M:%S'
+        },
+        'simple': {
+            'format': '[%(asctime)s] [%(levelname)s] %(message)s',
+            'datefmt': '%Y-%m-%d %H:%M:%S'
+        },
+        'json': {
+            '()': 'pythonjsonlogger.json.JsonFormatter',
+            'format': '%(asctime)s %(name)s %(levelname)s %(message)s %(lineno)s %(pathname)s'
+        },
+    },
+    'handlers': {
+        'file': {
+            'level': LOG_LEVEL,
+            'class': 'weather.custom_logging.GzipTimedRotatingFileHandler',
+            'filename': os.path.join(LOG_DIR, 'log.txt'),
+            'when': 'D',
+            'interval': 1,
+            'backupCount': 5,
+            'formatter': 'verbose',
+        },
+        'console': {
+            'level': LOG_LEVEL,
+            'class': 'logging.StreamHandler',
+            'formatter': 'simple' if DEBUG else 'json',
+        },
+    },
+    'loggers': {
+        'django': {
+            'handlers': ['file', 'console'],
+            'level': LOG_LEVEL,
+            'propagate': True,
+        },
+        'weather': {
+            'handlers': ['file', 'console'],
+            'level': LOG_LEVEL,
+            'propagate': False,
+        },
+    },
+}
+
+# REST FRAMEWORK SETTINGS # Added these
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': ('knox.auth.TokenAuthentication',),
+}
+
+# KNOX SETTINGS
+# Timeout for tokens (e.g., 10 hours)
+KNOX = {
+    "TOKEN_TTL": timedelta(hours=10),
+    "AUTH_HEADER_PREFIX": "Token",
+}

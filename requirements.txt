@@ -1,26 +1,29 @@
 # Core Dependencies for the project
-django # Django web framework
-djangorestframework #Drf
-django-redis      # Redis support for Django (caching, session storage)
-django-auth-ldap  # LDAP authentication for Django
-whitenoise        # Static file serving for production environments
+django 
+djangorestframework 
+django-rest-knox
+django-redis
+whitenoise       
+django-cors-headers
+dj-database-url
 
 # Environment and configuration
-python-dotenv      # Load environment variables from a .env file
-python-ldap        # LDAP support for Python (used by django-auth-ldap)
+python-dotenv
+python-json-logger
 
 # Date and time handling
-pytz               # World timezone support
+pytz              
 
 # External services integration
-geopy              # Geocoding (for location-based features)
-requests           # HTTP library for making requests
+geopy              
+requests           
 
-# Testing dependencies (Development only)
-pytest             # Unit testing framework
-pytest-django      # Django-specific test tools for pytest
-requests-mock      # Mocking HTTP requests during tests
-mock               # Mock Module
+# Testing dependencies 
+pytest       
+pytest-django      
+pytest-cov
+requests-mock      
+mock     
 
 # Utility
-packaging          # Tools for dealing with Python package versions and distribution
+packaging

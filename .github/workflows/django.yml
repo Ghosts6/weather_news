@@ -2,45 +2,67 @@ name: Django CI
 
 on:
   push:
-    branches: [ "main" ]
+    branches: [ "main", "migrate" ]
   pull_request:
     branches: [ "main" ]
 
 jobs:
   build:
     runs-on: ubuntu-latest
-    
+
     env:
       SECRET_KEY: ${{ secrets.SECRET_KEY }}
       API_KEY: ${{ secrets.API_KEY }}
       NEWS_API_KEY: ${{ secrets.NEWS_API_KEY }}
       WEATHER_API_KEY: ${{ secrets.WEATHER_API_KEY }}
       WEATHER_API_KEY_2: ${{ secrets.WEATHER_API_KEY_2 }}
-      
+
     strategy:
-      max-parallel: 4
+      max-parallel: 1
       matrix:
-        python-version: [3.7, 3.8, 3.9]
+        python-version: [3.10.12, 3.11, 3.12]
 
     steps:
     - uses: actions/checkout@v3
-    - name: Set up Python ${{ matrix.python-version }}
+
+    - name: Create empty docker.env for CI
+      run: touch docker.env
+
+    - name: Start Redis
+      run: docker compose up -d redis
+
+    - name: Wait for Redis to be ready
+      run: |
+        for i in $(seq 1 10); do
+          if docker compose run --rm redis redis-cli -h redis ping > /dev/null 2>&1; then
+            echo "Redis is ready!"
+            exit 0
+          fi
+          echo "Waiting for Redis..."
+          sleep 3
+        done
+        echo "Redis failed to start"
+        exit 1
+
+    - name: Set up Python
       uses: actions/setup-python@v3
       with:
         python-version: ${{ matrix.python-version }}
+
     - name: Install system dependencies
       run: |
         sudo apt-get update
         sudo apt-get install -y libldap2-dev libsasl2-dev
+
     - name: Install Dependencies
       run: |
         python -m pip install --upgrade pip
         pip install --no-cache-dir -r requirements.txt
-    - name: Collect static files
-      run: |
-        cd backend 
-        python manage.py collectstatic --no-input
+
     - name: Run Tests
-      run: |
-        cd backend 
-        python manage.py test
+      run: python backend/manage.py test
+
+    - name: Clean up
+      if: always()
+      run: docker compose down
+

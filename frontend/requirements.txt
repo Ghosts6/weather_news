@@ -1,6 +1,0 @@
-# Tailwind CSS and related tools
-tailwindcss
-autoprefixer
-postcss
-
-

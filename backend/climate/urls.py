@@ -1,9 +1,13 @@
 from django.contrib import admin
-from django.urls import include,path
+from django.urls import path, include
+from django.conf import settings
+from django.conf.urls.static import static
 
 urlpatterns = [
-    path('', include('weather.urls')),
     path('admin/', admin.site.urls),
+    path('', include('weather.urls')),
+    path('api/auth/', include('authentication.urls')),
 ]
-handler404 = 'climate.views.custom_page_not_found'
-handler500 = 'climate.views.custom_server_error'
+
+if settings.DEBUG:
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
