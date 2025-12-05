@@ -115,10 +115,25 @@ const MostViewed: React.FC = () => {
 
   const handleCityClick = (city: Weather) => {
     setSelectedCity(city);
+    if (hourlyForecastRef.current) {
+      hourlyForecastRef.current.scrollLeft = 0;
+    }
   };
 
   if (error) {
-    return <ErrorState message={error} onRetry={fetchWeatherData} />;
+    return (
+      <div className="w-full max-w-6xl mx-auto px-4 py-4 h-[80vh] flex flex-col">
+        <div className="text-center mb-8">
+          <div className="inline-block relative">
+            <h2 className="text-5xl font-light text-white mb-2">Popular Locations</h2>
+            <div className="h-1 bg-gradient-to-r from-transparent via-blue-500 to-transparent rounded-full"></div>
+          </div>
+        </div>
+        <div className="flex-grow flex items-center justify-center">
+          <ErrorState message={error} onRetry={fetchWeatherData} />
+        </div>
+      </div>
+    );
   }
 
   if (loading) {
@@ -231,7 +246,7 @@ const MostViewed: React.FC = () => {
                       );
                       const relevantHourlyForecast = selectedCity.hourly_forecast.slice(
                         startIndex !== -1 ? startIndex : 0,
-                        (startIndex !== -1 ? startIndex : 0) + 12
+                        (startIndex !== -1 ? startIndex : 0) + 24
                       );
                       return relevantHourlyForecast.map((hour, index) => (
                         <div key={index} className="flex-shrink-0 bg-white/10 hover:bg-white/15 rounded-xl p-3 text-center w-24 transition-all">

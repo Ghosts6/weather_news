@@ -455,7 +455,7 @@ const WeatherPage: React.FC = () => {
                                 );
                                 const relevantHourlyForecast = weatherData.hourly_forecast.slice(
                                   startIndex !== -1 ? startIndex : 0,
-                                  (startIndex !== -1 ? startIndex : 0) + 12
+                                  (startIndex !== -1 ? startIndex : 0) + 24
                                 );
                                 return relevantHourlyForecast.map((hour, index) => (
                                   <div key={index} className="flex-shrink-0 w-20 text-center bg-white/5 hover:bg-white/10 p-3 rounded-2xl transition-all duration-300">
