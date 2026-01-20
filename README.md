@@ -12,7 +12,6 @@
 - **Horizontal Scrolling Interface:** A unique and engaging way to browse through different news and weather sections.
 - **Light & Dark Mode:** Choose your preferred theme for a comfortable viewing experience.
 - **Responsive Design:** Fully responsive and accessible on all devices.
-- **User Authentication:** (Coming Soon) User accounts to save favorite locations and customize the experience.
 
 ## 🚀 Technologies
 
